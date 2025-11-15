@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:task_tracker/pages/splash_screen/splash_screen.dart';
@@ -7,6 +8,7 @@ import 'package:task_tracker/theme/custom_app_theme.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   // Hive Initialization
   await HiveService.initHive();
   runApp(MultiProvider(
