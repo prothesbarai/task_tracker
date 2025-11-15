@@ -34,15 +34,21 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
+  # For Flutter App Logo
   flutter_launcher_icons: ^0.14.4
+  # For Hive And Provider
   path: ^1.9.0
   provider: ^6.1.5
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   path_provider: ^2.1.5
+  # For Firebase
   firebase_core: ^4.1.1
   firebase_auth: ^6.1.0
   cloud_firestore: ^6.0.2
+  # For Internet Connection Warning
+  connectivity_plus: ^7.0.0
+  internet_connection_checker: ^1.0.0+1
 
 dev_dependencies:
   flutter_test:
