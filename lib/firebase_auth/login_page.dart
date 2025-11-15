@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:task_tracker/authentication/registration_page.dart';
+import 'package:task_tracker/firebase_auth/registration_page.dart';
 import '../utils/constant/app_colors.dart';
 import 'forgot_password_page.dart';
 

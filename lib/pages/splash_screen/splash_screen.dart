@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:task_tracker/authentication/login_page.dart';
 import 'package:task_tracker/utils/constant/app_colors.dart';
+import '../../firebase_auth/login_page.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
