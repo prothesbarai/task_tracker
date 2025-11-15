@@ -348,8 +348,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                   autovalidateMode: AutovalidateMode.onUserInteraction,
                                   onChanged: (value){
                                     setState(() {
-                                      if (value == passwordController.text){
-                                        conPassHelperText = "Successfully Password Matched";
+                                      if (value == passwordController.text && value.isNotEmpty){
+                                        conPassHelperText = "Password Matched";
                                         conPassIcon = Icon(Icons.verified,color: Colors.green, size: 15,);
                                         currentStep = 6;
                                       }else{

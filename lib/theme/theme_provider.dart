@@ -4,7 +4,7 @@ import 'package:task_tracker/theme/theme_selected_model/theme_selected_model.dar
 class ThemeProvider with ChangeNotifier{
 
   static const String _themeKey = 'selectedTheme';
-  final Box _themeBox = Hive.box("ThemeBooleanFlag");
+  final Box _themeBox = Hive.box("AppThemeEnumFlag");
   AppThemeEnum _selectedTheme = AppThemeEnum.system;
   bool _isDarkMode = false;
 
