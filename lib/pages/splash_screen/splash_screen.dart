@@ -1,7 +1,6 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:task_tracker/pages/home_page/home_page.dart';
+import 'package:task_tracker/authentication/login_page.dart';
 import 'package:task_tracker/utils/constant/app_colors.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -40,7 +39,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
         if(!mounted) return;
         Future.delayed(const Duration(seconds: 1),(){
           if(!mounted) return;
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage(),));
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage(),));
         });
       }
     });
