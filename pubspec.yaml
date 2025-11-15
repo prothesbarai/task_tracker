@@ -44,7 +44,7 @@ dependencies:
   path_provider: ^2.1.5
   # For Firebase
   firebase_core: ^4.1.1
-  firebase_auth: ^6.1.0
+  firebase_auth: ^6.1.2
   cloud_firestore: ^6.0.2
   # For Internet Connection Warning
   connectivity_plus: ^7.0.0

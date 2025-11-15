@@ -7,7 +7,13 @@ class UserHiveModel extends HiveObject {
   String uid;
 
   @HiveField(1)
+  String name;
+
+  @HiveField(2)
   String email;
 
-  UserHiveModel({required this.uid, required this.email});
+  @HiveField(3)
+  String phone;
+
+  UserHiveModel({required this.uid, required this.name, required this.email, required this.phone,});
 }

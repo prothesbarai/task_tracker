@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../utils/constant/app_colors.dart';
@@ -15,7 +16,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
   /// >>> Some Initialization Start Here =======================================
   int currentStep = 1;
   bool isLoading = false;
-  bool dropDownBorderColor = false;
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final phnNumberController = TextEditingController();
@@ -378,14 +378,17 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                     FocusScope.of(context).unfocus();
                                     if(currentStep == 7 && _formKey.currentState!.validate()){
 
-                                      /*String name = nameController.text.trim();
+                                      String name = nameController.text.trim();
                                       String phone = phnNumberController.text.trim();
                                       String email = emailController.text.trim();
-                                      String password = confirmPasswordController.text.trim();*/
+                                      String password = confirmPasswordController.text.trim();
 
 
                                       try{
-                                        /*setState(() {isLoading = true; dropDownBorderColor = false;});*/
+                                        setState(() {isLoading = true;});
+                                        final userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
+                                        String uid = userCredential.user!.uid;
+
 
                                       }catch(err){
                                         debugPrint("Error $err");
