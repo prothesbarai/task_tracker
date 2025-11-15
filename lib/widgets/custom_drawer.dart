@@ -25,9 +25,9 @@ class CustomDrawer extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text("Owner Name", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                            Text("Prothes Barai", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                             SizedBox(height: 6),
-                            Text("prothes16@email.com", style: TextStyle(fontSize: 13)),
+                            Text("developerprothes16@email.com", style: TextStyle(fontSize: 13),overflow: TextOverflow.ellipsis,),
                           ],
                         ),
                       )
