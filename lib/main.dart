@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:task_tracker/pages/splash_screen/splash_screen.dart';
-import 'package:task_tracker/provider/theme_provider.dart';
+import 'package:task_tracker/theme/theme_provider.dart';
 import 'package:task_tracker/service/hive_service.dart';
 import 'package:task_tracker/theme/custom_app_theme.dart';
 

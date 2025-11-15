@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:task_tracker/models/hive_models/theme_selected_model/theme_selected_model.dart';
+import 'package:task_tracker/theme/theme_selected_model/theme_selected_model.dart';
 class ThemeProvider with ChangeNotifier{
 
   static const String _themeKey = 'selectedTheme';

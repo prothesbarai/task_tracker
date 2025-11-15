@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:task_tracker/models/hive_models/theme_selected_model/theme_selected_model.dart';
-import 'package:task_tracker/provider/theme_provider.dart';
+import 'package:task_tracker/theme/theme_provider.dart';
 import 'package:task_tracker/widgets/custom_appbar.dart';
+import '../../theme/theme_selected_model/theme_selected_model.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -39,7 +39,7 @@ class _SettingsPageState extends State<SettingsPage> {
           ListTile(
             leading: Icon(Icons.color_lens,color: Theme.of(context).iconTheme.color,size: 35,),
             title: Text("App Preferences",style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color),),
-            subtitle: Text("Current : ${_getThemeItemsName(themeProvider.selectedTheme)}",style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color),),
+            subtitle: Text("Theme : ${_getThemeItemsName(themeProvider.selectedTheme)}",style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color),),
             onTap: (){
               AppThemeEnum tempTheme = themeProvider.selectedTheme;
               showDialog(
