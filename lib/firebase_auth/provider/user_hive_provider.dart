@@ -16,15 +16,16 @@ class UserHiveProvider with ChangeNotifier {
   }
 
   /// >>> Update Specific Field to Hive ========================================
-  Future<void> updateUser({String? uid, String? name, String? email, String? phone, bool? regLoginFlag,}) async {
+  Future<void> updateUser({String? uid, String? name, String? email, String? phone, String? createAt,bool? regLoginFlag,}) async {
     if (user == null) {
-      user = UserHiveModel(uid: uid ?? "", name: name ?? "", email: email ?? "", phone: phone ?? "", regLoginFlag: regLoginFlag ?? false,);
+      user = UserHiveModel(uid: uid ?? "", name: name ?? "", email: email ?? "", phone: phone ?? "", createAt: createAt ?? "", regLoginFlag: regLoginFlag ?? false,);
       await _userBox.add(user!);
     } else {
       user!.uid = uid ?? user!.uid;
       user!.name = name ?? user!.name;
       user!.email = email ?? user!.email;
       user!.phone = phone ?? user!.phone;
+      user!.createAt = createAt ?? user!.createAt;
       user!.regLoginFlag = regLoginFlag ?? user!.regLoginFlag;
       await user!.save();
     }

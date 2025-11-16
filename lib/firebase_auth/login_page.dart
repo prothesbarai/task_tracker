@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:task_tracker/firebase_auth/provider/user_hive_provider.dart';
 import 'package:task_tracker/firebase_auth/registration_page.dart';
 import 'package:task_tracker/pages/home_page/home_page.dart';
+import '../date_time_helper/date_time_helper.dart';
 import '../utils/constant/app_colors.dart';
 import 'forgot_password_page.dart';
 
@@ -229,7 +230,9 @@ class _LoginPageState extends State<LoginPage> {
                                           String name = data["name"] ?? "";
                                           String phone = data["phone"] ?? "";
                                           String emailFromDB = data["email"] ?? email;
-                                          await userProvider.updateUser(uid: uid, name: name, phone: phone, email: emailFromDB, regLoginFlag: true,);
+                                          Timestamp ts = data['createAt'] ?? "";
+                                          String createAt = DateTimeHelper.formatDateTime(ts.toDate());
+                                          await userProvider.updateUser(uid: uid, name: name, phone: phone, email: emailFromDB, createAt : createAt,regLoginFlag: true,);
                                         }
                                         if(!mounted) return;
                                         _navigateHomePage();

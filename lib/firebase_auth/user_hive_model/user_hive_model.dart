@@ -16,8 +16,11 @@ class UserHiveModel extends HiveObject {
   String phone;
 
   @HiveField(4)
+  String createAt;
+
+  @HiveField(5)
   bool regLoginFlag;
 
 
-  UserHiveModel({required this.uid, required this.name, required this.email, required this.phone,this.regLoginFlag = false});
+  UserHiveModel({required this.uid, required this.name, required this.email, required this.phone,required this.createAt,this.regLoginFlag = false});
 }
