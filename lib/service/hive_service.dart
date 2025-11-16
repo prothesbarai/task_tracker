@@ -12,8 +12,10 @@ class HiveService {
     Hive.registerAdapter(UserHiveModelAdapter());
 
     // Open boxes
-    await Hive.openBox('AppThemeEnumFlag');
-    await Hive.openBox<UserHiveModel>('UserLoginBox');
-    await Hive.openBox('onBoardingAppBox');
+    await Future.wait([
+      Hive.openBox('AppThemeEnumFlag'),
+      Hive.openBox<UserHiveModel>('UserLoginBox'),
+      Hive.openBox('onBoardingAppBox'),
+    ]);
   }
 }

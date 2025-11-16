@@ -1,5 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:task_tracker/firebase_auth/provider/user_hive_provider.dart';
 import 'package:task_tracker/firebase_auth/registration_page.dart';
+import 'package:task_tracker/pages/home_page/home_page.dart';
 import '../utils/constant/app_colors.dart';
 import 'forgot_password_page.dart';
 
@@ -40,6 +44,26 @@ class _LoginPageState extends State<LoginPage> {
     otpController.dispose();
     super.dispose();
   }
+
+
+  /// >>> Show Popup After Login ===============================================
+  void showMessage(String message, bool flag){
+   showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(flag ? "Successful" : "Failed"),
+        content: Text(message),
+        actions: [ElevatedButton(onPressed: (){Navigator.pop(context);}, child: Text("OK"))],
+      ),
+    );
+  }
+  /// <<< Show Popup After Login ===============================================
+
+  /// >>> Navigate Home Page ===================================================
+  void _navigateHomePage(){
+    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => HomePage()), (Route<dynamic> route) => false,);
+  }
+  /// <<< Navigate Home Page ===================================================
 
   @override
   Widget build(BuildContext context) {
@@ -190,12 +214,28 @@ class _LoginPageState extends State<LoginPage> {
                                   onPressed: isLoading? null :() async{
                                     FocusScope.of(context).unfocus();
                                     if(_formKey.currentState!.validate()){
-                                      /*String email = emailController.text.trim();
-                                      String password = passwordController.text.trim();*/
+                                      String email = emailController.text.trim();
+                                      String password = passwordController.text.trim();
+                                      setState(() {isLoading = true;});
                                       try{
+                                        final userProvider = Provider.of<UserHiveProvider>(context, listen: false);
 
-                                      }catch(err){
-                                        debugPrint("Error $err");
+                                        final userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
+                                        final uid = userCredential.user!.uid;
+                                        userProvider.updateUser(uid: uid,regLoginFlag: true);
+                                        if(!mounted) return;
+                                        _navigateHomePage();
+                                        showMessage("Successfully Login", true);
+                                      }on FirebaseAuthException catch(err){
+                                        String message = err.message ?? "Login failed!";
+                                        if (err.code == 'user-not-found') {
+                                          message = "Email not registered!";
+                                        } else if (err.code == 'wrong-password' || err.code == 'invalid-credential') {
+                                          message = "Incorrect Email or Password!";
+                                        }
+                                        showMessage(message, false);
+                                      }finally{
+                                        if (mounted) setState(() { isLoading = false; });
                                       }
                                     }
                                   },

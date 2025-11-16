@@ -1,6 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import 'package:task_tracker/firebase_auth/provider/user_hive_provider.dart';
 import '../utils/constant/app_colors.dart';
 import 'login_page.dart';
 
@@ -65,7 +68,19 @@ class _RegistrationPageState extends State<RegistrationPage> {
   /// <<< Navigate Login Page ==================================================
 
 
-
+  /// >>> Show Popup After Registration ========================================
+  void showMessage(String message, bool flag){
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => AlertDialog(
+          title: Text(flag ? "Successful" : "Failed"),
+          content: Text(message),
+          actions: [ElevatedButton(onPressed: (){Navigator.pop(context);flag ? _navigateLoginPage() : null; }, child: Text("OK"))],
+        ),
+    );
+  }
+  /// <<< Show Popup After Registration ========================================
 
   @override
   Widget build(BuildContext context) {
@@ -376,22 +391,38 @@ class _RegistrationPageState extends State<RegistrationPage> {
                               ElevatedButton(
                                   onPressed: isLoading || currentStep != 6 ? null :() async{
                                     FocusScope.of(context).unfocus();
-                                    if(currentStep == 7 && _formKey.currentState!.validate()){
+                                    if(currentStep == 6 && _formKey.currentState!.validate()){
 
                                       String name = nameController.text.trim();
                                       String phone = phnNumberController.text.trim();
                                       String email = emailController.text.trim();
                                       String password = confirmPasswordController.text.trim();
-
+                                      setState(() {isLoading = true;});
 
                                       try{
-                                        setState(() {isLoading = true;});
-                                        final userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
+                                        final userProvider = Provider.of<UserHiveProvider>(context, listen: false);
+
+                                        /// >>> Firebase Auth ==================
+                                        final userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
                                         String uid = userCredential.user!.uid;
+                                        /// >>> Firebase Save Name & Phone =====
+                                        await FirebaseFirestore.instance.collection('users').doc(uid).set({
+                                          'name' : name,
+                                          'phone' : phone,
+                                          'email' : email,
+                                          'createAt' : DateTime.now(),
+                                        });
 
-
-                                      }catch(err){
-                                        debugPrint("Error $err");
+                                        /// >>> Name & Phone Locally ===========
+                                        userProvider.updateUser(name: name,email: email,phone: phone);
+                                        if(!mounted) return;
+                                        showMessage("Successfully Registration Complete", true);
+                                      }on FirebaseAuthException catch(err){
+                                        String message = "Registration failed!";
+                                        if (err.code == 'email-already-in-use') message = "Email already registered";
+                                        showMessage(message, false);
+                                      }finally{
+                                        if (mounted) setState(() { isLoading = false; });
                                       }
                                     }
                                   },

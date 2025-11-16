@@ -8,6 +8,7 @@ import 'package:task_tracker/service/hive_service.dart';
 import 'package:task_tracker/theme/custom_app_theme.dart';
 import 'connection_checker/global_network_guard_widget.dart';
 import 'connection_checker/network_provider.dart';
+import 'firebase_auth/provider/user_hive_provider.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,6 +27,8 @@ void main() async{
       ChangeNotifierProvider(create: (context) => ThemeProvider()),
       // >>> Connection Checker ================================================
       ChangeNotifierProvider(create: (_) => NetworkProvider()),
+      // >>> User Data Show ====================================================
+      ChangeNotifierProvider(create: (_) => UserHiveProvider()),
     ],
     child: const MyApp())
   );
