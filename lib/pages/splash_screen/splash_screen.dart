@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:task_tracker/utils/constant/app_colors.dart';
 import '../../firebase_auth/login_page.dart';
+import '../../onboarding/onboarding_page.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -37,9 +39,15 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
       }else{
         _textTimer.cancel();
         if(!mounted) return;
-        Future.delayed(const Duration(seconds: 1),(){
+        Future.delayed(const Duration(seconds: 2),(){
+          final box = Hive.box("onBoardingAppBox");
+          bool seen = box.get("onboarding_seen",defaultValue: false);
           if(!mounted) return;
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage(),));
+          if(seen){
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage(),));
+          }else{
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => OnboardingPage(),));
+          }
         });
       }
     });

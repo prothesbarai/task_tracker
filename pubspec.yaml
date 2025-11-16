@@ -49,6 +49,8 @@ dependencies:
   # For Internet Connection Warning
   connectivity_plus: ^7.0.0
   internet_connection_checker: ^1.0.0+1
+  # Page Indicator
+  smooth_page_indicator: ^1.2.1
 
 dev_dependencies:
   flutter_test:
