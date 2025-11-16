@@ -69,4 +69,13 @@ class ThemeProvider with ChangeNotifier{
   // <<< Auto Update Dark Mode Value ===========================================
 
 
+  // >>> Clear Hive Data =======================================================
+  Future<void> clearTheme() async{
+    await _themeBox.clear();
+    _isDarkMode = false;
+    _selectedTheme = AppThemeEnum.system;
+    notifyListeners();
+  }
+  // <<< Clear Hive Data =======================================================
+
 }

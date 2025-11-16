@@ -1,10 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:provider/provider.dart';
 import 'package:task_tracker/pages/home_page/home_page.dart';
 import 'package:task_tracker/utils/constant/app_colors.dart';
 import '../../firebase_auth/login_page.dart';
-import '../../firebase_auth/user_hive_model/user_hive_model.dart';
+import '../../firebase_auth/provider/user_hive_provider.dart';
 import '../../onboarding/onboarding_page.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -40,22 +41,26 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
         });
       }else{
         _textTimer.cancel();
-        if(!mounted) return;
-        Future.delayed(const Duration(seconds: 2),(){
-          final userBox = Hive.box<UserHiveModel>("UserLoginBox");
-          UserHiveModel? user = userBox.isNotEmpty ? userBox.getAt(0) : null;
-          final box = Hive.box("onBoardingAppBox");
-          bool seen = box.get("onboarding_seen",defaultValue: false);
+
+        Future.microtask(() {
           if(!mounted) return;
-          if(user != null && user.regLoginFlag == true){
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage(),));
-          }else{
-            if(seen) {
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => LoginPage()));
+          final userProvider = Provider.of<UserHiveProvider>(context, listen: false);
+          final box = Hive.box("onBoardingAppBox");
+          bool seen = box.get("onboarding_seen", defaultValue: false);
+
+          Future.delayed(const Duration(seconds: 2), () {
+            if (!mounted) return;
+
+            if (userProvider.user != null && userProvider.user?.regLoginFlag == true) {
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => HomePage()));
             } else {
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => OnboardingPage()));
+              if (seen) {
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => LoginPage()));
+              } else {
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => OnboardingPage()));
+              }
             }
-          }
+          });
         });
       }
     });

@@ -414,7 +414,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                         });
 
                                         /// >>> Name & Phone Locally ===========
-                                        userProvider.updateUser(name: name,email: email,phone: phone);
+                                        await userProvider.updateUser(name: name,email: email,phone: phone);
                                         if(!mounted) return;
                                         showMessage("Successfully Registration Complete", true);
                                       }on FirebaseAuthException catch(err){

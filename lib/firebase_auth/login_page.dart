@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -222,7 +223,14 @@ class _LoginPageState extends State<LoginPage> {
 
                                         final userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
                                         final uid = userCredential.user!.uid;
-                                        userProvider.updateUser(uid: uid,regLoginFlag: true);
+                                        final getUserData = await FirebaseFirestore.instance.collection("users").doc(uid).get();
+                                        if (getUserData.exists) {
+                                          final data = getUserData.data()!;
+                                          String name = data["name"] ?? "";
+                                          String phone = data["phone"] ?? "";
+                                          String emailFromDB = data["email"] ?? email;
+                                          await userProvider.updateUser(uid: uid, name: name, phone: phone, email: emailFromDB, regLoginFlag: true,);
+                                        }
                                         if(!mounted) return;
                                         _navigateHomePage();
                                         showMessage("Successfully Login", true);

@@ -1,11 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:task_tracker/theme/theme_provider.dart';
+import '../firebase_auth/login_page.dart';
+import '../firebase_auth/provider/user_hive_provider.dart';
 import '../pages/drawer_pages/settings_page.dart';
 
-class CustomDrawer extends StatelessWidget {
+class CustomDrawer extends StatefulWidget {
   const CustomDrawer({super.key});
 
   @override
+  State<CustomDrawer> createState() => _CustomDrawerState();
+}
+
+class _CustomDrawerState extends State<CustomDrawer> {
+
+
+  /// >>> After Logout Remove Hive And Show Login Page =========================
+  void _navigateLoginPage(){
+    Navigator.pop(context);
+    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => LoginPage()), (Route<dynamic> route) => false,);
+  }
+  /// <<< After Logout Remove Hive And Show Login Page =========================
+
+  @override
   Widget build(BuildContext context) {
+
+    final userProvider = Provider.of<UserHiveProvider>(context);
+    final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+
     return Drawer(
       child: SafeArea(
           child: Column(
@@ -25,9 +47,9 @@ class CustomDrawer extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text("Prothes Barai", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                            Text(userProvider.user?.name != null ? "${userProvider.user?.name}" : "User Name", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                             SizedBox(height: 6),
-                            Text("developerprothes16@email.com", style: TextStyle(fontSize: 13),overflow: TextOverflow.ellipsis,),
+                            Text(userProvider.user?.email != null ? "${userProvider.user?.email}" : "User Email", style: TextStyle(fontSize: 13),overflow: TextOverflow.ellipsis,),
                           ],
                         ),
                       )
@@ -46,15 +68,46 @@ class CustomDrawer extends StatelessWidget {
                       _buildItem(context, "Settings", Icons.settings_outlined, onTap: (){Navigator.pop(context);Navigator.push(context, MaterialPageRoute(builder: (context) => SettingsPage(),));}),
                     ],
                   )
-              )
+              ),
               /// <<< =================== Drawer Items =========================
+
+
+              /// >>> =================== Logout Bottom ==========================
+              Divider(),
+              ListTile(
+                leading: Icon(Icons.logout,size: 30),
+                title: Text("Logout", style: TextStyle(fontSize: 15),),
+                onTap: () {
+                  // Logout logic
+                  showDialog(
+                    context: context,
+                    builder: (ctx) => AlertDialog(
+                      title: const Text("Logout"),
+                      content: const Text("Are you sure you want to logout?"),
+                      actions: [
+                        ElevatedButton(onPressed: () => Navigator.pop(ctx), child: const Text("Cancel")),
+                        ElevatedButton(
+                            onPressed: () async{
+                              await Future.wait([
+                                userProvider.clearUserData(),
+                                themeProvider.clearTheme(),
+                              ]);
+                              if(mounted) _navigateLoginPage();
+                            },
+                            child: const Text("Logout")
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+              SizedBox(height: 10),
+              /// <<< =================== Logout Bottom ==========================
             ],
           )
       ),
     );
   }
-
-
 
   /// >>> ========================= Drawer Item Widget =========================
   Widget _buildItem(BuildContext context, String title, IconData icon, {bool showSwitch = false, bool switchValue = false, ValueChanged<bool>? onSwitchChanged, VoidCallback? onTap,}) {
@@ -65,5 +118,4 @@ class CustomDrawer extends StatelessWidget {
       trailing: showSwitch ? Switch(value: switchValue, onChanged: onSwitchChanged, activeThumbColor: Colors.white, inactiveThumbColor: Colors.grey,) : const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white38, size: 16),
     );
   }
-/// <<< ========================= Drawer Item Widget =========================
 }
