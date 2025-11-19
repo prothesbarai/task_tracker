@@ -2,11 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:task_tracker/firebase_auth/provider/user_hive_provider.dart';
-import 'package:task_tracker/firebase_auth/registration_page.dart';
+import 'package:task_tracker/firebase_auth/email_auth/provider/user_hive_provider.dart';
+import 'package:task_tracker/firebase_auth/email_auth/registration_page.dart';
 import 'package:task_tracker/pages/home_page/home_page.dart';
-import '../date_time_helper/date_time_helper.dart';
-import '../utils/constant/app_colors.dart';
+import '../../date_time_helper/date_time_helper.dart';
+import '../../utils/constant/app_colors.dart';
 import 'forgot_password_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -271,6 +271,16 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                               /// <<< =============== IF You New User So Registration Here =================
 
+
+
+                              /// >>> Login With Google ========================
+                              ElevatedButton(
+                                  onPressed: () async{
+
+                                  },
+                                  child: Text("Continue with google")
+                              )
+                              /// <<< Login With Google ========================
 
                           ],
                         )

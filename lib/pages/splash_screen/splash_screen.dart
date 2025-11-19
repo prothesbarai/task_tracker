@@ -4,8 +4,8 @@ import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 import 'package:task_tracker/pages/home_page/home_page.dart';
 import 'package:task_tracker/utils/constant/app_colors.dart';
-import '../../firebase_auth/login_page.dart';
-import '../../firebase_auth/provider/user_hive_provider.dart';
+import '../../firebase_auth/email_auth/login_page.dart';
+import '../../firebase_auth/email_auth/provider/user_hive_provider.dart';
 import '../../onboarding/onboarding_page.dart';
 
 class SplashScreen extends StatefulWidget {

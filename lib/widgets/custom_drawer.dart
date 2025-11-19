@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:task_tracker/theme/theme_provider.dart';
-import '../firebase_auth/login_page.dart';
-import '../firebase_auth/provider/user_hive_provider.dart';
+import '../firebase_auth/email_auth/login_page.dart';
+import '../firebase_auth/email_auth/provider/user_hive_provider.dart';
 import '../pages/drawer_pages/settings_page.dart';
 
 class CustomDrawer extends StatefulWidget {

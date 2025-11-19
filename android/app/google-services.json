@@ -12,7 +12,20 @@
           "package_name": "com.prothes.task_tracker"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "386584413530-0l8seige9vipsldb29q3ivh2mdubflrm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.prothes.task_tracker",
+            "certificate_hash": "f1c10f47490fb65e315341b0270ebf2e3de910f5"
+          }
+        },
+        {
+          "client_id": "386584413530-0uf2m81qmod3b8otsoeu46qthtg99hqt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyD-sgrhdIGpXU_h4mP3rL9O57_O99emdcs"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "386584413530-0uf2m81qmod3b8otsoeu46qthtg99hqt.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "386584413530-eii6noj5cb4o8jmvh02qaobgcn36q43b.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.prothes.taskTracker"
+              }
+            }
+          ]
         }
       }
     }

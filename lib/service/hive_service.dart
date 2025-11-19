@@ -1,6 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
-import '../firebase_auth/user_hive_model/user_hive_model.dart';
+import '../firebase_auth/email_auth/user_hive_model/user_hive_model.dart';
 import '../theme/theme_selected_model/theme_selected_model.dart';
 
 class HiveService {

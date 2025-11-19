@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:task_tracker/firebase_auth/login_page.dart';
-import '../../utils/constant/app_colors.dart';
+import '../../../utils/constant/app_colors.dart';
+import 'login_page.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
@@ -40,10 +40,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     }
   }
   /// <<< Password Reset Function ==============================================
-
-
-
-
 
 
 

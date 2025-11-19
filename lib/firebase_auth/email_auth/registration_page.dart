@@ -3,8 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:task_tracker/firebase_auth/provider/user_hive_provider.dart';
-import '../utils/constant/app_colors.dart';
+import 'package:task_tracker/firebase_auth/email_auth/provider/user_hive_provider.dart';
+import '../../utils/constant/app_colors.dart';
 import 'login_page.dart';
 
 class RegistrationPage extends StatefulWidget {
