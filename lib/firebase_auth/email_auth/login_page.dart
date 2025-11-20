@@ -279,7 +279,50 @@ class _LoginPageState extends State<LoginPage> {
                                   onPressed: () async {
                                     final userCred = await GoogleLoginService().signInWithGoogleFirebase();
                                     if (userCred != null) {
-                                      debugPrint("User: ${userCred.user}");
+                                      final user = userCred.user;
+                                      debugPrint("\n================ USER FULL DATA ================\n");
+                                      // Basic Info
+                                      debugPrint("UID: ${user?.uid}");
+                                      debugPrint("Display Name: ${user?.displayName}");
+                                      debugPrint("Email: ${user?.email}");
+                                      debugPrint("Phone Number: ${user?.phoneNumber}");
+                                      debugPrint("Photo URL: ${user?.photoURL}");
+                                      debugPrint("Is Email Verified: ${user?.emailVerified}");
+                                      debugPrint("Is Anonymous: ${user?.isAnonymous}");
+                                      // Provider Data (Correct Way)
+                                      debugPrint("Provider Count: ${user?.providerData.length}");
+                                      if (user!.providerData.isNotEmpty) {
+                                        debugPrint("Primary Provider ID: ${user.providerData.first.providerId}");
+                                      }
+                                      // Metadata
+                                      debugPrint("Creation Time: ${user.metadata.creationTime}");
+                                      debugPrint("Last Sign-In Time: ${user.metadata.lastSignInTime}");
+                                      // Multi-Provider Details
+                                      debugPrint("\n------ Provider Data List ------");
+                                      for (var info in user.providerData) {
+                                        debugPrint("Provider: ${info.providerId}");
+                                        debugPrint("UID: ${info.uid}");
+                                        debugPrint("Display Name: ${info.displayName}");
+                                        debugPrint("Email: ${info.email}");
+                                        debugPrint("Phone: ${info.phoneNumber}");
+                                        debugPrint("Photo URL: ${info.photoURL}");
+                                        debugPrint("----------------");
+                                      }
+                                      // Tenant ID
+                                      debugPrint("Tenant ID: ${user.tenantId}");
+                                      // ID Token
+                                      final idToken = await user.getIdToken();
+                                      debugPrint("ID Token: $idToken");
+                                      // Token Details
+                                      final tokenResult = await user.getIdTokenResult();
+                                      debugPrint("\n------ Token Result Details ------");
+                                      debugPrint("Auth Time: ${tokenResult.authTime}");
+                                      debugPrint("Expiration Time: ${tokenResult.expirationTime}");
+                                      debugPrint("Issued At Time: ${tokenResult.issuedAtTime}");
+                                      debugPrint("Sign-In Provider: ${tokenResult.signInProvider}");
+                                      debugPrint("Claims: ${tokenResult.claims}");
+
+                                      debugPrint("\n================ END USER DATA ================");
                                     } else {
                                       debugPrint("Google Sign-In cancelled or failed");
                                     }
