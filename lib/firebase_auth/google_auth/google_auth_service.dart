@@ -5,7 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 class GoogleLoginService {
   final _googleSignIn = GoogleSignIn(
     params: const GoogleSignInParams(
-      clientId: 'YOUR_CLIENT_ID.apps.googleusercontent.com',
+      clientId: '386584413530-0uf2m81qmod3b8otsoeu46qthtg99hqt.apps.googleusercontent.com',
       clientSecret: 'YOUR_CLIENT_SECRET',
       scopes: ['openid', 'email', 'profile'],
     ),
