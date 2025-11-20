@@ -19,6 +19,7 @@ class GoogleLoginService {
         /// >>> User SignIn Close or Failed
         return null;
       }
+
       /// >>> Get idToken or accessToken
       final idToken = creds.idToken;
       final accessToken = creds.accessToken;
@@ -28,7 +29,8 @@ class GoogleLoginService {
       }
 
       /// >>> Create Firebase OAuthCredential
-      final oauthCredential = GoogleAuthProvider.credential(idToken: idToken, accessToken: accessToken,);
+      final oauthCredential = GoogleAuthProvider.credential(idToken: idToken, accessToken: accessToken);
+
       /// >>> Sign-In Firebase
       final userCredential = await FirebaseAuth.instance.signInWithCredential(oauthCredential);
       return userCredential;
