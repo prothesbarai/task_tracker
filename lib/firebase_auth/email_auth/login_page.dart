@@ -330,36 +330,21 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                               ElevatedButton(
                               onPressed: () {
-                                // TODO: Add Google Sign-In logic
+                                
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.white,
                                 foregroundColor: Colors.black87,
                                 elevation: 0,
                                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(24),
-                                  side: BorderSide(
-                                    color: Colors.grey.shade400,
-                                    width: 1,
-                                  ),
-                                ),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24), side: BorderSide(color: Colors.grey.shade400, width: 1,),),
                               ),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Image.asset(
-                                    "assets/icon/google.png",
-                                    height: 24,
-                                    width: 24,
-                                  ),
+                                  Image.asset("assets/icon/google.png", height: 24, width: 24,),
                                   const SizedBox(width: 12),
-                                  const Text(
-                                    "Sign in with Google",
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                    ),
-                                  ),
+                                  const Text("Sign in with Google", style: TextStyle(fontSize: 16,),),
                                 ],
                               ),
                             )
