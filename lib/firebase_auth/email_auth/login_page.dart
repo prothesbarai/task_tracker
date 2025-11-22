@@ -68,6 +68,40 @@ class _LoginPageState extends State<LoginPage> {
   }
   /// <<< Navigate Home Page ===================================================
 
+
+
+  /// >>> Get Phone Number Form Dialogue =======================================
+  Future<String?> showPhoneNumberDialog() async {
+    TextEditingController controller = TextEditingController();
+
+    return await showDialog<String>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Enter Phone Number"),
+          content: TextField(
+            controller: controller,
+            keyboardType: TextInputType.phone,
+            decoration: InputDecoration(hintText: "+8801XXXXXXXXX"),
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () { Navigator.pop(context, null); },
+              child: Text("Cancel"),
+            ),
+            ElevatedButton(
+              onPressed: () { Navigator.pop(context, controller.text.trim()); },
+              child: Text("Submit"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+  /// <<< Get Phone Number Form Dialogue =======================================
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -97,9 +131,6 @@ class _LoginPageState extends State<LoginPage> {
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     SizedBox(height: kToolbarHeight),
-
-
-
 
 
                                     /// >>> Form Title Start Here ====================
@@ -323,8 +354,13 @@ class _LoginPageState extends State<LoginPage> {
                     onPressed: () async {
                       setState(() => isLoading = true);
                       final userProvider = Provider.of<UserHiveProvider>(context, listen: false);
+                      String? phoneNumber = await showPhoneNumberDialog();
+                      if (phoneNumber == null || phoneNumber.isEmpty) {
+                        debugPrint("Phone number not provided. Sign-In cancelled.");
+                        setState(() => isLoading = false);
+                        return;
+                      }
                       final userCred = await GoogleLoginService.instance.signInWithGoogleFirebase();
-
                       if (userCred != null) {
                         final user = userCred.user!;
                         final uid = user.uid;
@@ -337,9 +373,9 @@ class _LoginPageState extends State<LoginPage> {
                           await userProvider.updateUser(
                             uid: uid,
                             name: data["name"] ?? "",
-                            phone: data["phone"] ?? "",
+                            phone: phoneNumber,
                             email: data["email"] ?? "",
-                            createAt: DateTimeHelper.formatDateTime((data["createAt"] as Timestamp).toDate(),),
+                            createAt: DateTimeHelper.formatDateTime((data["createAt"] as Timestamp).toDate()),
                             regLoginFlag: true,
                           );
                         }
@@ -408,14 +444,14 @@ class _LoginPageState extends State<LoginPage> {
                       foregroundColor: Colors.black87,
                       elevation: 0,
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24), side: BorderSide(color: Colors.grey.shade400, width: 1,),),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24), side: BorderSide(color: Colors.grey.shade400, width: 1),),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Image.asset("assets/icon/google.png", height: 24, width: 24,),
+                        Image.asset("assets/icon/google.png", height: 24, width: 24),
                         const SizedBox(width: 12),
-                        const Text("Sign in with Google", style: TextStyle(fontSize: 16,),),
+                        const Text("Sign in with Google", style: TextStyle(fontSize: 16)),
                       ],
                     ),
                   )
