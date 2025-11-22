@@ -84,7 +84,6 @@ class _LoginPageState extends State<LoginPage> {
             behavior: HitTestBehavior.opaque,
             child: Stack(
               children: [
-
                 Center(
                   child: Padding(
                     padding: EdgeInsets.only(top: 60.0,left: 10.0,right: 10.0,bottom: 10.0),
@@ -336,7 +335,6 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ),
-
                 if (isLoading)
                   Positioned(
                     top: 0,
