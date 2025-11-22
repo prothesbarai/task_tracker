@@ -324,11 +324,14 @@ class _LoginPageState extends State<LoginPage> {
                       setState(() => isLoading = true);
                       final userProvider = Provider.of<UserHiveProvider>(context, listen: false);
                       final userCred = await GoogleLoginService.instance.signInWithGoogleFirebase();
+
                       if (userCred != null) {
                         final user = userCred.user!;
                         final uid = user.uid;
+
                         /// >>> Get user data From FireStore
                         final getUserData = await FirebaseFirestore.instance.collection("users").doc(uid).get();
+
                         if (getUserData.exists) {
                           final data = getUserData.data()!;
                           await userProvider.updateUser(
@@ -340,11 +343,12 @@ class _LoginPageState extends State<LoginPage> {
                             regLoginFlag: true,
                           );
                         }
+
                         if (!mounted) return;
                         _navigateHomePage();
 
-
                         debugPrint("\n================ USER FULL DATA ================\n");
+
                         // Basic Info
                         debugPrint("UID: ${user.uid}");
                         debugPrint("Display Name: ${user.displayName}");
@@ -353,14 +357,17 @@ class _LoginPageState extends State<LoginPage> {
                         debugPrint("Photo URL: ${user.photoURL}");
                         debugPrint("Is Email Verified: ${user.emailVerified}");
                         debugPrint("Is Anonymous: ${user.isAnonymous}");
+
                         // Provider Data (Correct Way)
                         debugPrint("Provider Count: ${user.providerData.length}");
                         if (user.providerData.isNotEmpty) {
                           debugPrint("Primary Provider ID: ${user.providerData.first.providerId}");
                         }
+
                         // Metadata
                         debugPrint("Creation Time: ${user.metadata.creationTime}");
                         debugPrint("Last Sign-In Time: ${user.metadata.lastSignInTime}");
+
                         // Multi-Provider Details
                         debugPrint("\n------ Provider Data List ------");
                         for (var info in user.providerData) {
@@ -372,11 +379,14 @@ class _LoginPageState extends State<LoginPage> {
                           debugPrint("Photo URL: ${info.photoURL}");
                           debugPrint("----------------");
                         }
+
                         // Tenant ID
                         debugPrint("Tenant ID: ${user.tenantId}");
+
                         // ID Token
                         final idToken = await user.getIdToken();
                         debugPrint("ID Token: $idToken");
+
                         // Token Details
                         final tokenResult = await user.getIdTokenResult();
                         debugPrint("\n------ Token Result Details ------");
@@ -385,10 +395,12 @@ class _LoginPageState extends State<LoginPage> {
                         debugPrint("Issued At Time: ${tokenResult.issuedAtTime}");
                         debugPrint("Sign-In Provider: ${tokenResult.signInProvider}");
                         debugPrint("Claims: ${tokenResult.claims}");
+
                         debugPrint("\n================ END USER DATA ================");
                       } else {
                         debugPrint("Google Sign-In cancelled or failed");
                       }
+
                       if (mounted) setState(() => isLoading = false);
                     },
                     style: ElevatedButton.styleFrom(
@@ -396,7 +408,10 @@ class _LoginPageState extends State<LoginPage> {
                       foregroundColor: Colors.black87,
                       elevation: 0,
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24), side: BorderSide(color: Colors.grey.shade400, width: 1,),),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(24),
+                        side: BorderSide(color: Colors.grey.shade400, width: 1,),
+                      ),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,

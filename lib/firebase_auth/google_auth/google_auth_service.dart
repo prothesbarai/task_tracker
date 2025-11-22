@@ -18,7 +18,7 @@ class GoogleLoginService {
   /// ---------------------------------------------------------
   /// SIGN IN WITH GOOGLE + FIREBASE + FIRESTORE + RETURN USER
   /// ---------------------------------------------------------
-  Future<UserCredential?> signInWithGoogleFirebase() async {
+  Future signInWithGoogleFirebase() async {
     try {
       final GoogleSignInCredentials? creds = await _googleSignIn.signIn();
       if (creds == null) return null;
@@ -41,7 +41,14 @@ class GoogleLoginService {
 
       /// >>> Create/Update Firestore User Document
       final userDoc = FirebaseFirestore.instance.collection("users").doc(user.uid);
-      await userDoc.set({"name": user.displayName ?? "", "email": user.email ?? "", "phone": user.phoneNumber ?? "", "photo": user.photoURL ?? "", "createAt": FieldValue.serverTimestamp(), "provider": "google",}, SetOptions(merge: true));
+      await userDoc.set({
+        "name": user.displayName ?? "",
+        "email": user.email ?? "",
+        "phone": user.phoneNumber ?? "",
+        "photo": user.photoURL ?? "",
+        "createAt": FieldValue.serverTimestamp(),
+        "provider": "google",
+      }, SetOptions(merge: true));
 
       return userCredential;
     } catch (e) {
@@ -51,7 +58,7 @@ class GoogleLoginService {
   }
 
   /// LOGOUT
-  Future<void> signOut() async {
+  Future signOut() async {
     await _googleSignIn.signOut();
     await FirebaseAuth.instance.signOut();
   }
