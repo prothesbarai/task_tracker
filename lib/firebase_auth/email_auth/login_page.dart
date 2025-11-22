@@ -408,10 +408,7 @@ class _LoginPageState extends State<LoginPage> {
                       foregroundColor: Colors.black87,
                       elevation: 0,
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(24),
-                        side: BorderSide(color: Colors.grey.shade400, width: 1,),
-                      ),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24), side: BorderSide(color: Colors.grey.shade400, width: 1,),),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
