@@ -215,65 +215,71 @@ class _LoginPageState extends State<LoginPage> {
                                     /// <<< Password Field End Here ==================
 
 
-                                    /// >>> Registration Button Start Here ===========
-                                    ElevatedButton(
-                                        onPressed: isLoading? null :() async{
-                                          FocusScope.of(context).unfocus();
-                                          if(_formKey.currentState!.validate()){
-                                            String email = emailController.text.trim();
-                                            String password = passwordController.text.trim();
-                                            setState(() {isLoading = true;});
-                                            try{
-                                              final userProvider = Provider.of<UserHiveProvider>(context, listen: false);
+                                    /// >>> Login Button Start Here ============
+                                    SizedBox(
+                                      width: MediaQuery.of(context).size.width * 0.6,
+                                      child: ElevatedButton(
+                                          onPressed: isLoading? null :() async{
+                                            FocusScope.of(context).unfocus();
+                                            if(_formKey.currentState!.validate()){
+                                              String email = emailController.text.trim();
+                                              String password = passwordController.text.trim();
+                                              setState(() {isLoading = true;});
+                                              try{
+                                                final userProvider = Provider.of<UserHiveProvider>(context, listen: false);
 
-                                              final userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
-                                              final uid = userCredential.user!.uid;
-                                              final getUserData = await FirebaseFirestore.instance.collection("users").doc(uid).get();
-                                              if (getUserData.exists) {
-                                                final data = getUserData.data()!;
-                                                String name = data["name"] ?? "";
-                                                String phone = data["phone"] ?? "";
-                                                String emailFromDB = data["email"] ?? email;
-                                                Timestamp ts = data['createAt'] ?? "";
-                                                String createAt = DateTimeHelper.formatDateTime(ts.toDate());
-                                                await userProvider.updateUser(uid: uid, name: name, phone: phone, email: emailFromDB, createAt : createAt,regLoginFlag: true,);
+                                                final userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
+                                                final uid = userCredential.user!.uid;
+                                                final getUserData = await FirebaseFirestore.instance.collection("users").doc(uid).get();
+                                                if (getUserData.exists) {
+                                                  final data = getUserData.data()!;
+                                                  String name = data["name"] ?? "";
+                                                  String phone = data["phone"] ?? "";
+                                                  String emailFromDB = data["email"] ?? email;
+                                                  Timestamp ts = data['createAt'] ?? "";
+                                                  String createAt = DateTimeHelper.formatDateTime(ts.toDate());
+                                                  await userProvider.updateUser(uid: uid, name: name, phone: phone, email: emailFromDB, createAt : createAt,regLoginFlag: true,);
+                                                }
+                                                if(!mounted) return;
+                                                _navigateHomePage();
+                                                showMessage("Successfully Login", true);
+                                              }on FirebaseAuthException catch(err){
+                                                String message = err.message ?? "Login failed!";
+                                                if (err.code == 'user-not-found') {
+                                                  message = "Email not registered!";
+                                                } else if (err.code == 'wrong-password' || err.code == 'invalid-credential') {
+                                                  message = "Incorrect Email or Password!";
+                                                }
+                                                showMessage(message, false);
+                                              }finally{
+                                                if (mounted) setState(() { isLoading = false; });
                                               }
-                                              if(!mounted) return;
-                                              _navigateHomePage();
-                                              showMessage("Successfully Login", true);
-                                            }on FirebaseAuthException catch(err){
-                                              String message = err.message ?? "Login failed!";
-                                              if (err.code == 'user-not-found') {
-                                                message = "Email not registered!";
-                                              } else if (err.code == 'wrong-password' || err.code == 'invalid-credential') {
-                                                message = "Incorrect Email or Password!";
-                                              }
-                                              showMessage(message, false);
-                                            }finally{
-                                              if (mounted) setState(() { isLoading = false; });
                                             }
-                                          }
-                                        },
-                                        child: isLoading?Padding(padding: EdgeInsets.all(10.0), child: Text("Wait..",style: TextStyle(fontSize: 20,color: Colors.white.withValues(alpha: 0.5)),),):Padding(padding: EdgeInsets.all(10.0), child: Text("Login",style: TextStyle(fontSize: 20),),)
+                                          },
+                                          style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24))),
+                                          child: isLoading?Padding(padding: EdgeInsets.symmetric(horizontal: 10.0), child: Text("Wait..",style: TextStyle(fontSize: 20,color: Colors.white.withValues(alpha: 0.5)),),):Padding(padding: EdgeInsets.all(10.0), child: Text("Login",style: TextStyle(fontSize: 20),),)
+                                      ),
                                     ),
-                                    /// <<< Registration Button End Here =============
+                                    /// <<< Login Button End Here ==============
 
 
-                                    /// >>> =============== IF You New User So Registration Here =================
+                                    /// >>> =============== IF You New User So Registration Here And Forgot Password =================
                                     SizedBox(height: 25,),
-                                    InkWell(
-                                      onTap:()=>Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => RegistrationPage()), (Route<dynamic> route) => false,),
-                                      child: Text("New User? Registration",style: TextStyle(color: AppColors.primaryColor),),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        InkWell(
+                                          onTap:()=>Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => RegistrationPage()), (Route<dynamic> route) => false,),
+                                          child: Text("Registration",style: TextStyle(color: AppColors.primaryColor),),
+                                        ),
+                                        Padding(padding: EdgeInsets.symmetric(horizontal: 10,),child: Text("|",style: TextStyle(color: Colors.grey),),),
+                                        InkWell(
+                                          onTap:()=>Navigator.push(context, MaterialPageRoute(builder: (context) => ForgotPasswordPage(),)),
+                                          child: Text("Forgot Password",style: TextStyle(color: AppColors.primaryColor),),
+                                        ),
+                                      ],
                                     ),
-                                    /// <<< =============== IF You New User So Registration Here =================
-
-                                    /// >>> =============== IF You New User So Registration Here =================
-                                    SizedBox(height: 15,),
-                                    InkWell(
-                                      onTap:()=>Navigator.push(context, MaterialPageRoute(builder: (context) => ForgotPasswordPage(),)),
-                                      child: Text("Forgot Password",style: TextStyle(color: AppColors.primaryColor),),
-                                    ),
-                                    /// <<< =============== IF You New User So Registration Here =================
+                                    /// <<< =============== IF You New User So Registration Here And Forgot Password =================
 
                                   ],
                                 )
