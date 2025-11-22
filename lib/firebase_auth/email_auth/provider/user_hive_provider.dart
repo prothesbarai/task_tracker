@@ -8,7 +8,7 @@ class UserHiveProvider with ChangeNotifier {
 
   UserHiveProvider() {_init();}
 
-  Future<void> _init() async {
+  Future _init() async {
     if (_userBox.isNotEmpty) {
       user = _userBox.getAt(0);
     }
@@ -16,9 +16,16 @@ class UserHiveProvider with ChangeNotifier {
   }
 
   /// >>> Update Specific Field to Hive ========================================
-  Future<void> updateUser({String? uid, String? name, String? email, String? phone, String? createAt,bool? regLoginFlag,}) async {
+  Future updateUser({String? uid, String? name, String? email, String? phone, String? createAt, bool? regLoginFlag,}) async {
     if (user == null) {
-      user = UserHiveModel(uid: uid ?? "", name: name ?? "", email: email ?? "", phone: phone ?? "", createAt: createAt ?? "", regLoginFlag: regLoginFlag ?? false,);
+      user = UserHiveModel(
+        uid: uid ?? "",
+        name: name ?? "",
+        email: email ?? "",
+        phone: phone ?? "",
+        createAt: createAt ?? "",
+        regLoginFlag: regLoginFlag ?? false,
+      );
       await _userBox.add(user!);
     } else {
       user!.uid = uid ?? user!.uid;
@@ -35,10 +42,10 @@ class UserHiveProvider with ChangeNotifier {
 
 
   /// >>> Clear Hive User Data =================================================
-  Future<void> clearUserData() async{
+  Future clearUserData() async{
     await _userBox.clear();
     user = null;
     notifyListeners();
   }
-  /// <<< Clear Hive User Data =================================================
+/// <<< Clear Hive User Data =================================================
 }
