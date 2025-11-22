@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:task_tracker/theme/theme_provider.dart';
 import '../firebase_auth/email_auth/login_page.dart';
 import '../firebase_auth/email_auth/provider/user_hive_provider.dart';
+import '../firebase_auth/google_auth/google_auth_service.dart';
 import '../pages/drawer_pages/settings_page.dart';
 
 class CustomDrawer extends StatefulWidget {
@@ -25,7 +26,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
   @override
   Widget build(BuildContext context) {
 
-    final userProvider = Provider.of<UserHiveProvider>(context);
+    final userProvider = Provider.of<UserHiveProvider>(context,listen: false);
     final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
 
     return Drawer(
@@ -89,6 +90,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                         ElevatedButton(
                             onPressed: () async{
                               await Future.wait([
+                                GoogleLoginService.instance.signOut(),
                                 userProvider.clearUserData(),
                                 themeProvider.clearTheme(),
                               ]);

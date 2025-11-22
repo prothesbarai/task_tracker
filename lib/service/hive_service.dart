@@ -13,9 +13,9 @@ class HiveService {
 
     // Open boxes
     await Future.wait([
-      Hive.openBox('AppThemeEnumFlag'),
-      Hive.openBox<UserHiveModel>('UserLoginBox'),
-      Hive.openBox('onBoardingAppBox'),
+      Hive.openBox('AppThemeEnumFlag'), // For Light & Dark mode
+      Hive.openBox<UserHiveModel>('UserLoginBox'), // Use For Email Authentication
+      Hive.openBox('onBoardingAppBox'), // for on boarding
     ]);
   }
 }

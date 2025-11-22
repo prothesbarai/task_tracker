@@ -321,21 +321,41 @@ class _LoginPageState extends State<LoginPage> {
                 children: [
                   ElevatedButton(
                     onPressed: () async {
+                      setState(() => isLoading = true);
+                      final userProvider = Provider.of<UserHiveProvider>(context, listen: false);
                       final userCred = await GoogleLoginService.instance.signInWithGoogleFirebase();
                       if (userCred != null) {
-                        final user = userCred.user;
+                        final user = userCred.user!;
+                        final uid = user.uid;
+                        /// >>> Get user data From FireStore
+                        final getUserData = await FirebaseFirestore.instance.collection("users").doc(uid).get();
+                        if (getUserData.exists) {
+                          final data = getUserData.data()!;
+                          await userProvider.updateUser(
+                            uid: uid,
+                            name: data["name"] ?? "",
+                            phone: data["phone"] ?? "",
+                            email: data["email"] ?? "",
+                            createAt: DateTimeHelper.formatDateTime((data["createAt"] as Timestamp).toDate(),),
+                            regLoginFlag: true,
+                          );
+                        }
+                        if (!mounted) return;
+                        _navigateHomePage();
+
+
                         debugPrint("\n================ USER FULL DATA ================\n");
                         // Basic Info
-                        debugPrint("UID: ${user?.uid}");
-                        debugPrint("Display Name: ${user?.displayName}");
-                        debugPrint("Email: ${user?.email}");
-                        debugPrint("Phone Number: ${user?.phoneNumber}");
-                        debugPrint("Photo URL: ${user?.photoURL}");
-                        debugPrint("Is Email Verified: ${user?.emailVerified}");
-                        debugPrint("Is Anonymous: ${user?.isAnonymous}");
+                        debugPrint("UID: ${user.uid}");
+                        debugPrint("Display Name: ${user.displayName}");
+                        debugPrint("Email: ${user.email}");
+                        debugPrint("Phone Number: ${user.phoneNumber}");
+                        debugPrint("Photo URL: ${user.photoURL}");
+                        debugPrint("Is Email Verified: ${user.emailVerified}");
+                        debugPrint("Is Anonymous: ${user.isAnonymous}");
                         // Provider Data (Correct Way)
-                        debugPrint("Provider Count: ${user?.providerData.length}");
-                        if (user!.providerData.isNotEmpty) {
+                        debugPrint("Provider Count: ${user.providerData.length}");
+                        if (user.providerData.isNotEmpty) {
                           debugPrint("Primary Provider ID: ${user.providerData.first.providerId}");
                         }
                         // Metadata
@@ -365,11 +385,11 @@ class _LoginPageState extends State<LoginPage> {
                         debugPrint("Issued At Time: ${tokenResult.issuedAtTime}");
                         debugPrint("Sign-In Provider: ${tokenResult.signInProvider}");
                         debugPrint("Claims: ${tokenResult.claims}");
-
                         debugPrint("\n================ END USER DATA ================");
                       } else {
                         debugPrint("Google Sign-In cancelled or failed");
                       }
+                      if (mounted) setState(() => isLoading = false);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
