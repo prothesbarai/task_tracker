@@ -19,6 +19,8 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
 
+  bool emailLoading = false;
+  bool googleLoading = false;
   bool isLoading = false;
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
@@ -105,259 +107,239 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       extendBodyBehindAppBar: true,
       extendBody: true,
       appBar: AppBar(backgroundColor: Colors.transparent,elevation: 0,),
       body: Container(
         decoration: BoxDecoration(color: AppColors.bodyBgOverlayColor),
         height: double.infinity,
-        child: Column(
+        child: Stack(
           children: [
             /// >>> Input Field & Email Authentication =========================
-            Expanded(
-                child: SingleChildScrollView(
-                  physics: BouncingScrollPhysics(),
-                  child: GestureDetector(
-                    onTap: () => FocusScope.of(context).unfocus(),
-                    behavior: HitTestBehavior.opaque,
-                    child: Stack(
-                      children: [
-                        Center(
-                          child: Padding(
-                            padding: EdgeInsets.only(top: 60.0,left: 10.0,right: 10.0,bottom: 10.0),
-                            child: Form(
-                                key: _formKey,
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    SizedBox(height: kToolbarHeight),
+            SingleChildScrollView(
+              physics: BouncingScrollPhysics(),
+              child: GestureDetector(
+                onTap: () => FocusScope.of(context).unfocus(),
+                behavior: HitTestBehavior.opaque,
+                child: Stack(
+                  children: [
+                    Center(
+                      child: Padding(
+                        padding: EdgeInsets.only(top: 60.0,left: 10.0,right: 10.0,bottom: 10.0),
+                        child: Form(
+                            key: _formKey,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                SizedBox(height: kToolbarHeight),
 
 
-                                    /// >>> Form Title Start Here ====================
-                                    Text("Login Form",style:TextStyle(color: AppColors.primaryColor,fontSize: 30,fontWeight: FontWeight.bold), textAlign: TextAlign.center,),
-                                    SizedBox(height: 50,),
-                                    /// <<< Form Title End Here ======================
+                                /// >>> Form Title Start Here ====================
+                                Text("Login Form",style:TextStyle(color: AppColors.primaryColor,fontSize: 30,fontWeight: FontWeight.bold), textAlign: TextAlign.center,),
+                                SizedBox(height: 50,),
+                                /// <<< Form Title End Here ======================
 
 
-                                    /// >>> Email Field Start Here ===================
-                                    TextFormField(
-                                      decoration: InputDecoration(
-                                        hintText: "Email",
-                                        hintStyle: TextStyle(color: AppColors.appInputFieldActiveColor),
-                                        fillColor: Colors.white.withValues(alpha: 0.3),
-                                        filled: true,
-                                        prefixIcon: Icon(Icons.email_outlined),
-                                        prefixIconColor: AppColors.appInputFieldActiveColor,
-                                        labelStyle: TextStyle(color: AppColors.appInputFieldUnActiveColor),
-                                        floatingLabelStyle: TextStyle(color: AppColors.appInputFieldActiveColor),
-                                        border: OutlineInputBorder(borderSide: BorderSide(color: AppColors.appInputFieldUnActiveColor)),
-                                        focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: AppColors.appInputFieldActiveColor)),
-                                        helper: Row(children: [emailIcon, SizedBox(width: 5,), Text(emailHelperText,style: TextStyle(color : AppColors.appInputFieldUnActiveColor),)],),
-                                      ),
-                                      keyboardType: TextInputType.emailAddress,
-                                      maxLength: 50,
-                                      cursorColor: AppColors.appInputFieldActiveColor,
-                                      controller: emailController,
-                                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                                      onChanged: (value){
-                                        setState(() {
-                                          if (RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$').hasMatch(value)){
-                                            emailHelperText = "Valid Email";
-                                            emailIcon = Icon(Icons.verified,color: Colors.green, size: 15,);
-                                          }else{
-                                            emailHelperText = "";
-                                          }
-                                        });
-                                      },
-                                      validator: (value){
-                                        if(value == null || value.trim().isEmpty){
-                                          return "Field is Empty";
-                                        }
-                                        if (!RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$').hasMatch(value)){
-                                          return "Invalid Email";
-                                        }
-                                        return null;
-                                      },
-                                    ),
-                                    SizedBox(height: 20,),
-                                    /// <<< Email Field End Here =====================
+                                /// >>> Email Field Start Here ===================
+                                TextFormField(
+                                  decoration: InputDecoration(
+                                    hintText: "Email",
+                                    hintStyle: TextStyle(color: AppColors.appInputFieldActiveColor),
+                                    fillColor: Colors.white.withValues(alpha: 0.3),
+                                    filled: true,
+                                    prefixIcon: Icon(Icons.email_outlined),
+                                    prefixIconColor: AppColors.appInputFieldActiveColor,
+                                    labelStyle: TextStyle(color: AppColors.appInputFieldUnActiveColor),
+                                    floatingLabelStyle: TextStyle(color: AppColors.appInputFieldActiveColor),
+                                    border: OutlineInputBorder(borderSide: BorderSide(color: AppColors.appInputFieldUnActiveColor)),
+                                    focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: AppColors.appInputFieldActiveColor)),
+                                    helper: Row(children: [emailIcon, SizedBox(width: 5,), Text(emailHelperText,style: TextStyle(color : AppColors.appInputFieldUnActiveColor),)],),
+                                  ),
+                                  keyboardType: TextInputType.emailAddress,
+                                  maxLength: 50,
+                                  cursorColor: AppColors.appInputFieldActiveColor,
+                                  controller: emailController,
+                                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                                  onChanged: (value){
+                                    setState(() {
+                                      if (RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$').hasMatch(value)){
+                                        emailHelperText = "Valid Email";
+                                        emailIcon = Icon(Icons.verified,color: Colors.green, size: 15,);
+                                      }else{
+                                        emailHelperText = "";
+                                      }
+                                    });
+                                  },
+                                  validator: (value){
+                                    if(value == null || value.trim().isEmpty){
+                                      return "Field is Empty";
+                                    }
+                                    if (!RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$').hasMatch(value)){
+                                      return "Invalid Email";
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                SizedBox(height: 20,),
+                                /// <<< Email Field End Here =====================
 
 
-                                    /// >>> Password Field Start Here ================
-                                    TextFormField(
-                                      decoration: InputDecoration(
-                                        hintText: "Password",
-                                        hintStyle: TextStyle(color: AppColors.appInputFieldActiveColor),
-                                        fillColor: Colors.white.withValues(alpha: 0.3),
-                                        filled: true,
-                                        prefixIcon: Icon(Icons.password_outlined),
-                                        prefixIconColor: AppColors.appInputFieldActiveColor,
-                                        labelStyle: TextStyle(color: AppColors.appInputFieldUnActiveColor),
-                                        floatingLabelStyle: TextStyle(color: AppColors.appInputFieldActiveColor),
-                                        border: OutlineInputBorder(borderSide: BorderSide(color: AppColors.appInputFieldUnActiveColor)),
-                                        focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: AppColors.appInputFieldActiveColor)),
-                                        helper: Row(children: [passIcon, SizedBox(width: 5,), Text(passHelperText,style: TextStyle(color : AppColors.appInputFieldUnActiveColor),)],),
-                                        suffixIcon: IconButton(
-                                          icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility, color: AppColors.appInputFieldActiveColor,),
-                                          onPressed: () {
-                                            setState(() {_obscurePassword = !_obscurePassword;});
-                                          },
-                                        ),
-                                      ),
-                                      keyboardType: TextInputType.visiblePassword,
-                                      maxLength: 22,
-                                      cursorColor: AppColors.appInputFieldActiveColor,
-                                      controller: passwordController,
-                                      obscureText: _obscurePassword,
-                                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                                      onChanged: (value){
-                                        setState(() {
-                                          if (value.length >= 8 && RegExp(r'^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*{}()\\.+=?/_-]).{8,}$').hasMatch(value)){
-                                            passHelperText = "Valid Password";
-                                            passIcon = Icon(Icons.verified,color: Colors.green, size: 15,);
-                                          }else{
-                                            passHelperText = "";
-                                          }
-                                        });
-                                      },
-                                      validator: (value) {
-                                        if (value == null || value.trim().isEmpty) {
-                                          return "Field is Empty";
-                                        }
-                                        if (!RegExp(r'[A-Z]').hasMatch(value)) {
-                                          return "Must contain at least one uppercase letter (A-Z)";
-                                        }
-                                        if (!RegExp(r'[a-z]').hasMatch(value)) {
-                                          return "Must contain at least one lowercase letter (a-z)";
-                                        }
-                                        if (!RegExp(r'[0-9]').hasMatch(value)) {
-                                          return "Must contain at least one number (0-9)";
-                                        }
-                                        if (!RegExp(r'[!@#$%^&*{}()\\.+=?/_-]').hasMatch(value)) {
-                                          return "Must contain at least one Symbol";
-                                        }
-                                        if (value.length < 8) {
-                                          return "Password must be at least 8 characters long";
-                                        }
-                                        return null;
+                                /// >>> Password Field Start Here ================
+                                TextFormField(
+                                  decoration: InputDecoration(
+                                    hintText: "Password",
+                                    hintStyle: TextStyle(color: AppColors.appInputFieldActiveColor),
+                                    fillColor: Colors.white.withValues(alpha: 0.3),
+                                    filled: true,
+                                    prefixIcon: Icon(Icons.password_outlined),
+                                    prefixIconColor: AppColors.appInputFieldActiveColor,
+                                    labelStyle: TextStyle(color: AppColors.appInputFieldUnActiveColor),
+                                    floatingLabelStyle: TextStyle(color: AppColors.appInputFieldActiveColor),
+                                    border: OutlineInputBorder(borderSide: BorderSide(color: AppColors.appInputFieldUnActiveColor)),
+                                    focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: AppColors.appInputFieldActiveColor)),
+                                    helper: Row(children: [passIcon, SizedBox(width: 5,), Text(passHelperText,style: TextStyle(color : AppColors.appInputFieldUnActiveColor),)],),
+                                    suffixIcon: IconButton(
+                                      icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility, color: AppColors.appInputFieldActiveColor,),
+                                      onPressed: () {
+                                        setState(() {_obscurePassword = !_obscurePassword;});
                                       },
                                     ),
-                                    SizedBox(height: 20,),
-                                    /// <<< Password Field End Here ==================
+                                  ),
+                                  keyboardType: TextInputType.visiblePassword,
+                                  maxLength: 22,
+                                  cursorColor: AppColors.appInputFieldActiveColor,
+                                  controller: passwordController,
+                                  obscureText: _obscurePassword,
+                                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                                  onChanged: (value){
+                                    setState(() {
+                                      if (value.length >= 8 && RegExp(r'^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*{}()\\.+=?/_-]).{8,}$').hasMatch(value)){
+                                        passHelperText = "Valid Password";
+                                        passIcon = Icon(Icons.verified,color: Colors.green, size: 15,);
+                                      }else{
+                                        passHelperText = "";
+                                      }
+                                    });
+                                  },
+                                  validator: (value) {
+                                    if (value == null || value.trim().isEmpty) {
+                                      return "Field is Empty";
+                                    }
+                                    if (!RegExp(r'[A-Z]').hasMatch(value)) {
+                                      return "Must contain at least one uppercase letter (A-Z)";
+                                    }
+                                    if (!RegExp(r'[a-z]').hasMatch(value)) {
+                                      return "Must contain at least one lowercase letter (a-z)";
+                                    }
+                                    if (!RegExp(r'[0-9]').hasMatch(value)) {
+                                      return "Must contain at least one number (0-9)";
+                                    }
+                                    if (!RegExp(r'[!@#$%^&*{}()\\.+=?/_-]').hasMatch(value)) {
+                                      return "Must contain at least one Symbol";
+                                    }
+                                    if (value.length < 8) {
+                                      return "Password must be at least 8 characters long";
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                SizedBox(height: 20,),
+                                /// <<< Password Field End Here ==================
 
 
-                                    /// >>> Login Button Start Here ============
-                                    SizedBox(
-                                      width: MediaQuery.of(context).size.width * 0.6,
-                                      child: ElevatedButton(
-                                          onPressed: isLoading? null :() async{
-                                            FocusScope.of(context).unfocus();
-                                            if(_formKey.currentState!.validate()){
-                                              String email = emailController.text.trim();
-                                              String password = passwordController.text.trim();
-                                              setState(() {isLoading = true;});
-                                              try{
-                                                final userProvider = Provider.of<UserHiveProvider>(context, listen: false);
+                                /// >>> Login Button Start Here ================
+                                SizedBox(
+                                  width: MediaQuery.of(context).size.width * 0.6,
+                                  child: ElevatedButton(
+                                      onPressed: emailLoading || googleLoading ? null :() async{
+                                        FocusScope.of(context).unfocus();
+                                        if(_formKey.currentState!.validate()){
+                                          String email = emailController.text.trim();
+                                          String password = passwordController.text.trim();
+                                          setState(() {emailLoading = true; isLoading = true;});
+                                          try{
+                                            final userProvider = Provider.of<UserHiveProvider>(context, listen: false);
 
-                                                final userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
-                                                final uid = userCredential.user!.uid;
-                                                final getUserData = await FirebaseFirestore.instance.collection("users").doc(uid).get();
-                                                if (getUserData.exists) {
-                                                  final data = getUserData.data()!;
-                                                  String name = data["name"] ?? "";
-                                                  String phone = data["phone"] ?? "";
-                                                  String emailFromDB = data["email"] ?? email;
-                                                  Timestamp ts = data['createAt'] ?? "";
-                                                  String createAt = DateTimeHelper.formatDateTime(ts.toDate());
-                                                  await userProvider.updateUser(uid: uid, name: name, phone: phone, email: emailFromDB, createAt : createAt,regLoginFlag: true,);
-                                                }
-                                                if(!mounted) return;
-                                                _navigateHomePage();
-                                                showMessage("Successfully Login", true);
-                                              }on FirebaseAuthException catch(err){
-                                                String message = err.message ?? "Login failed!";
-                                                if (err.code == 'user-not-found') {
-                                                  message = "Email not registered!";
-                                                } else if (err.code == 'wrong-password' || err.code == 'invalid-credential') {
-                                                  message = "Incorrect Email or Password!";
-                                                }
-                                                showMessage(message, false);
-                                              }finally{
-                                                if (mounted) setState(() { isLoading = false; });
-                                              }
+                                            final userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
+                                            final uid = userCredential.user!.uid;
+                                            final getUserData = await FirebaseFirestore.instance.collection("users").doc(uid).get();
+                                            if (getUserData.exists) {
+                                              final data = getUserData.data()!;
+                                              String name = data["name"] ?? "";
+                                              String phone = data["phone"] ?? "";
+                                              String emailFromDB = data["email"] ?? email;
+                                              Timestamp ts = data['createAt'] ?? "";
+                                              String createAt = DateTimeHelper.formatDateTime(ts.toDate());
+                                              await userProvider.updateUser(uid: uid, name: name, phone: phone, email: emailFromDB, createAt : createAt,regLoginFlag: true,);
                                             }
-                                          },
-                                          style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24))),
-                                          child: isLoading?Padding(padding: EdgeInsets.symmetric(horizontal: 10.0), child: Text("Wait..",style: TextStyle(fontSize: 20,color: Colors.white.withValues(alpha: 0.5)),),):Padding(padding: EdgeInsets.all(10.0), child: Text("Login",style: TextStyle(fontSize: 20),),)
-                                      ),
-                                    ),
-                                    /// <<< Login Button End Here ==============
+                                            if(!mounted) return;
+                                            _navigateHomePage();
+                                            showMessage("Successfully Login", true);
+                                          }on FirebaseAuthException catch(err){
+                                            String message = err.message ?? "Login failed!";
+                                            if (err.code == 'user-not-found') {
+                                              message = "Email not registered!";
+                                            } else if (err.code == 'wrong-password' || err.code == 'invalid-credential') {
+                                              message = "Incorrect Email or Password!";
+                                            }
+                                            showMessage(message, false);
+                                          }finally{
+                                            if (mounted) setState(() { emailLoading = false; isLoading = false;});
+                                          }
+                                        }
+                                      },
+                                      style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24))),
+                                      child: emailLoading?Padding(padding: EdgeInsets.symmetric(horizontal: 10.0), child: Text("Wait..",style: TextStyle(fontSize: 20,color: Colors.white.withValues(alpha: 0.5)),),):Padding(padding: EdgeInsets.all(10.0), child: Text("Login",style: TextStyle(fontSize: 20),),)
+                                  ),
+                                ),
+                                /// <<< Login Button End Here ==============
 
 
-                                    /// >>> =============== IF You New User So Registration Here And Forgot Password =================
-                                    SizedBox(height: 25,),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        InkWell(
-                                          onTap:()=>Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => RegistrationPage()), (Route<dynamic> route) => false,),
-                                          child: Text("Registration",style: TextStyle(color: AppColors.primaryColor),),
-                                        ),
-                                        Padding(padding: EdgeInsets.symmetric(horizontal: 10,),child: Text("|",style: TextStyle(color: Colors.grey),),),
-                                        InkWell(
-                                          onTap:()=>Navigator.push(context, MaterialPageRoute(builder: (context) => ForgotPasswordPage(),)),
-                                          child: Text("Forgot Password",style: TextStyle(color: AppColors.primaryColor),),
-                                        ),
-                                      ],
-                                    ),
-                                    /// <<< =============== IF You New User So Registration Here And Forgot Password =================
-
-                                  ],
-                                )
-                            ),
-                          ),
-                        ),
-                        if (isLoading)
-                          Positioned(
-                            top: 0,
-                            bottom: 0,
-                            left: 0,
-                            right: 0,
-                            child: Center(
-                              child: Container(
-                                padding: EdgeInsets.all(20),
-                                decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.6), borderRadius: BorderRadius.circular(12),),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
+                                /// >>> =============== IF You New User So Registration Here And Forgot Password =================
+                                SizedBox(height: 25,),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    CircularProgressIndicator(color: Colors.white),
-                                    SizedBox(height: 15),
-                                    Text("Loading...", style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold,),),
+                                    InkWell(
+                                      onTap:()=>Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => RegistrationPage()), (Route<dynamic> route) => false,),
+                                      child: Text("Registration",style: TextStyle(color: AppColors.primaryColor),),
+                                    ),
+                                    Padding(padding: EdgeInsets.symmetric(horizontal: 10,),child: Text("|",style: TextStyle(color: Colors.grey),),),
+                                    InkWell(
+                                      onTap:()=>Navigator.push(context, MaterialPageRoute(builder: (context) => ForgotPasswordPage(),)),
+                                      child: Text("Forgot Password",style: TextStyle(color: AppColors.primaryColor),),
+                                    ),
                                   ],
                                 ),
-                              ),
-                            ),
-                          ),
-                      ],
+                                /// <<< =============== IF You New User So Registration Here And Forgot Password =================
+
+                              ],
+                            )
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
+              ),
             ),
             /// <<< Input Field & Email Authentication =========================
 
             /// >>> Button Part Google Authentication ==========================
-            Padding(
-              padding: EdgeInsets.only(bottom: kBottomNavigationBarHeight + MediaQuery.of(context).size.height * 0.03),
-              child: Column(
-                children: [
-                  ElevatedButton(
-                    onPressed: () async {
-                      setState(() => isLoading = true);
+            SafeArea(
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: ElevatedButton(
+                    onPressed: googleLoading || emailLoading ? null : () async {
+                      setState(() {googleLoading = true;isLoading = true;});
+                      setState(() => googleLoading = true);
                       final userProvider = Provider.of<UserHiveProvider>(context, listen: false);
                       String? phoneNumber = await showPhoneNumberDialog();
                       if (phoneNumber == null || phoneNumber.isEmpty) {
                         debugPrint("Phone number not provided. Sign-In cancelled.");
-                        setState(() => isLoading = false);
+                        setState(() {googleLoading = false; isLoading = false;});
                         return;
                       }
                       final userCred = await GoogleLoginService.instance.signInWithGoogleFirebase();
@@ -437,7 +419,7 @@ class _LoginPageState extends State<LoginPage> {
                         debugPrint("Google Sign-In cancelled or failed");
                       }
 
-                      if (mounted) setState(() => isLoading = false);
+                      if (mounted) setState(() {googleLoading = false;isLoading = false;});
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
@@ -451,14 +433,37 @@ class _LoginPageState extends State<LoginPage> {
                       children: [
                         Image.asset("assets/icon/google.png", height: 24, width: 24),
                         const SizedBox(width: 12),
-                        const Text("Sign in with Google", style: TextStyle(fontSize: 16)),
+                        googleLoading ? Text("Signing...") : Text("Sign in with Google", style: TextStyle(fontSize: 16)),
                       ],
                     ),
-                  )
-                ],
+                  ),
+                ),
               ),
             ),
             /// <<< Button Part Google Authentication ==========================
+
+
+            if (isLoading)
+              Positioned(
+                top: 0,
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Center(
+                  child: Container(
+                    padding: EdgeInsets.all(20),
+                    decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.6), borderRadius: BorderRadius.circular(12),),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        CircularProgressIndicator(color: Colors.white),
+                        SizedBox(height: 15),
+                        Text("Loading...", style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold,),),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
           ],
         )
       ),
