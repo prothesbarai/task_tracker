@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:task_tracker/widgets/custom_appbar.dart';
 import 'package:task_tracker/widgets/custom_drawer.dart';
-
 import '../../firebase_auth/email_auth/provider/user_hive_provider.dart';
 
 class HomePage extends StatelessWidget {

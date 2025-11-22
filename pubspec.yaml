@@ -43,9 +43,10 @@ dependencies:
   hive_flutter: ^1.1.0
   path_provider: ^2.1.5
   # For Firebase
-  firebase_core: ^4.1.1
-  firebase_auth: ^6.1.2
-  cloud_firestore: ^6.0.2
+  firebase_core: ^4.1.1 # For Global
+  firebase_auth: ^6.1.2 # For Authentication
+  cloud_firestore: ^6.0.2 # For Firebase Database
+  firebase_database: ^12.1.0 # For Realtime Database
   # For Internet Connection Warning
   connectivity_plus: ^7.0.0
   internet_connection_checker: ^1.0.0+1
@@ -53,6 +54,7 @@ dependencies:
   smooth_page_indicator: ^1.2.1
   # Google With SIgn in purpose
   google_sign_in_all_platforms: ^2.0.2
+
 
 dev_dependencies:
   flutter_test:
