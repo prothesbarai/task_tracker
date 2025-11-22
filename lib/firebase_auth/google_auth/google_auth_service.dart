@@ -3,7 +3,10 @@ import 'package:google_sign_in_all_platforms/google_sign_in_all_platforms.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class GoogleLoginService {
-  final _googleSignIn = GoogleSignIn(
+  GoogleLoginService._();
+  static final GoogleLoginService instance = GoogleLoginService._();
+
+  static final GoogleSignIn _googleSignIn = GoogleSignIn(
     params: const GoogleSignInParams(
       clientId: '386584413530-0uf2m81qmod3b8otsoeu46qthtg99hqt.apps.googleusercontent.com',
       clientSecret: 'YOUR_CLIENT_SECRET',
@@ -11,7 +14,7 @@ class GoogleLoginService {
     ),
   );
 
-  Future<UserCredential?> signInWithGoogleFirebase() async {
+  Future signInWithGoogleFirebase() async {
     try {
       /// >>> Get Google SignIn credential
       final GoogleSignInCredentials? creds = await _googleSignIn.signIn();
@@ -40,7 +43,7 @@ class GoogleLoginService {
     }
   }
 
-  Future<void> signOut() async {
+  Future signOut() async {
     await _googleSignIn.signOut();
     await FirebaseAuth.instance.signOut();
   }

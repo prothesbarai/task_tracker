@@ -321,7 +321,7 @@ class _LoginPageState extends State<LoginPage> {
                 children: [
                   ElevatedButton(
                     onPressed: () async {
-                      final userCred = await GoogleLoginService().signInWithGoogleFirebase();
+                      final userCred = await GoogleLoginService.instance.signInWithGoogleFirebase();
                       if (userCred != null) {
                         final user = userCred.user;
                         debugPrint("\n================ USER FULL DATA ================\n");
