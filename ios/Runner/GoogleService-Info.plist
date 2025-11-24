@@ -3,23 +3,21 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>386584413530-eii6noj5cb4o8jmvh02qaobgcn36q43b.apps.googleusercontent.com</string>
+	<string>402840393446-7hg81bibuasbmr4ql9eaqdmn4e3egcl4.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.386584413530-eii6noj5cb4o8jmvh02qaobgcn36q43b</string>
-	<key>ANDROID_CLIENT_ID</key>
-	<string>386584413530-0l8seige9vipsldb29q3ivh2mdubflrm.apps.googleusercontent.com</string>
+	<string>com.googleusercontent.apps.402840393446-7hg81bibuasbmr4ql9eaqdmn4e3egcl4</string>
 	<key>API_KEY</key>
-	<string>AIzaSyCLtdNcLl_7I-yDJmw43m1xPGbr0-s1vUk</string>
+	<string>AIzaSyAglBp8EfDCc-_yZ1Kwpfb5lzdjCFsZzbg</string>
 	<key>GCM_SENDER_ID</key>
-	<string>386584413530</string>
+	<string>402840393446</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>com.prothes.taskTracker</string>
 	<key>PROJECT_ID</key>
-	<string>task-tracker-9dcfc</string>
+	<string>task-tracker-56a94</string>
 	<key>STORAGE_BUCKET</key>
-	<string>task-tracker-9dcfc.firebasestorage.app</string>
+	<string>task-tracker-56a94.firebasestorage.app</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -31,6 +29,8 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:386584413530:ios:a04591d3f32a107f979f63</string>
+	<string>1:402840393446:ios:3c84f138cd81881e034d27</string>
+	<key>DATABASE_URL</key>
+	<string>https://task-tracker-56a94-default-rtdb.firebaseio.com</string>
 </dict>
 </plist>

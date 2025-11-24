@@ -9,7 +9,7 @@ class GoogleLoginService {
 
   static final GoogleSignIn _googleSignIn = GoogleSignIn(
     params: const GoogleSignInParams(
-      clientId: '386584413530-0uf2m81qmod3b8otsoeu46qthtg99hqt.apps.googleusercontent.com',
+      clientId: '402840393446-kjm6oatmnf934cedauf599e75u0drbc8.apps.googleusercontent.com',
       clientSecret: 'YOUR_CLIENT_SECRET',
       scopes: ['openid', 'email', 'profile'],
     ),
