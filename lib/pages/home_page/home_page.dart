@@ -1,9 +1,66 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:task_tracker/date_time_helper/date_time_helper.dart';
 import '../../firebase_auth/email_auth/provider/user_hive_provider.dart';
+import '../../utils/constant/app_colors.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  TextEditingController taskController = TextEditingController();
+
+  void openCreateTaskDialog() {
+
+    DateTime dateTime = DateTime.now();
+    final currentDateTime = DateTimeHelper.formatDateTime(dateTime);
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16),),
+          title: Text("Create New Task"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              /// Task Name Input
+              TextField(controller: taskController, decoration: InputDecoration(labelText: "Task Name", border: OutlineInputBorder(),),),
+              SizedBox(height: 12),
+            ],
+          ),
+
+          /// Buttons
+          actions: [
+            ElevatedButton(onPressed: (){ Navigator.pop(context);FocusScope.of(context).unfocus();}, child: Text("Cancel"),),
+            ElevatedButton(
+              onPressed: () {
+                FocusScope.of(context).unfocus();
+                if (taskController.text.isNotEmpty) {
+                  print("Task Name: ${taskController.text}");
+                  print("Auto DateTime: $currentDateTime");
+                  // এখানে save করার কোড লিখবে (Firebase/Local)
+                  Navigator.pop(context);
+                }
+              },
+              child: Text("Save"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
+  @override
+  void dispose() {
+    super.dispose();
+    taskController.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,117 +94,139 @@ class HomePage extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: const Color(0xffF5F7FB),
-      body: SingleChildScrollView(
-        physics: BouncingScrollPhysics(),
-        padding: EdgeInsets.only(top: kToolbarHeight,left: 16,right: 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+      floatingActionButton: SizedBox(
+        width: 150,
+        height: 50,
+        child: FloatingActionButton(
+          onPressed: openCreateTaskDialog,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12),),
+          backgroundColor: AppColors.primaryColor.withValues(alpha: 0.8),
+          elevation: 3,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: const [
+              Icon(Icons.add, size: 22, color: Colors.white),
+              SizedBox(width: 6),
+              Text("Create Task", style: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.w600,),),
+            ],
+          ),
+        ),
+      ),
+      body: GestureDetector(
+        onTap: () {FocusScope.of(context).unfocus();},
+        behavior: HitTestBehavior.opaque,
+        child: SingleChildScrollView(
+          physics: BouncingScrollPhysics(),
+          padding: EdgeInsets.only(top: kToolbarHeight,left: 16,right: 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
 
-            /// >>> USER SECTION ===============================================
-            Row(
-              children: [
-                CircleAvatar(
-                  radius: 30,
-                  backgroundColor: Colors.blue.shade100,
-                  child: const Icon(Icons.person, size: 32, color: Colors.white),
-                ),
-                const SizedBox(width: 12),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(user?.name ?? "Unknown User", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
-                    Text(user?.phone ?? "Unknown User", style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500,),),
-                  ],
-                )
-              ],
-            ),
-            const SizedBox(height: 20),
-            /// <<< USER SECTION ===============================================
-
-            /// >>> Daily Meeting ==============================================
-            Container(
-              padding: const EdgeInsets.all(18),
-              decoration: BoxDecoration(color: Colors.deepPurple.shade100, borderRadius: BorderRadius.circular(16),),
-              child: Row(
+              /// >>> USER SECTION ===============================================
+              Row(
                 children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Text("Daily Scrum Meeting", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold,),),
-                        SizedBox(height: 4),
-                        Text("Meet your team about daily update", style: TextStyle(fontSize: 14),),
-                      ],
-                    ),
+                  CircleAvatar(
+                    radius: 30,
+                    backgroundColor: Colors.blue.shade100,
+                    child: const Icon(Icons.person, size: 32, color: Colors.white),
                   ),
-                  ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.white, foregroundColor: Colors.black, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30),),),
-                    child: const Text("Join"),
+                  const SizedBox(width: 12),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(user?.name ?? "Unknown User", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
+                      Text(user?.phone ?? "Unknown User", style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500,),),
+                    ],
                   )
                 ],
               ),
-            ),
-            const SizedBox(height: 25),
-            /// <<< Daily Meeting ==============================================
+              const SizedBox(height: 20),
+              /// <<< USER SECTION ===============================================
+
+              /// >>> Daily Meeting ==============================================
+              Container(
+                padding: const EdgeInsets.all(18),
+                decoration: BoxDecoration(color: Colors.deepPurple.shade100, borderRadius: BorderRadius.circular(16),),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: const [
+                          Text("Daily Scrum Meeting", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold,),),
+                          SizedBox(height: 4),
+                          Text("Meet your team about daily update", style: TextStyle(fontSize: 14),),
+                        ],
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(backgroundColor: Colors.white, foregroundColor: Colors.black, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30),),),
+                      child: const Text("Join"),
+                    )
+                  ],
+                ),
+              ),
+              const SizedBox(height: 25),
+              /// <<< Daily Meeting ==============================================
 
 
-            /// >>> Status =====================================================
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
-                Text("Status", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                Text("See All") ],
-            ),
-            const SizedBox(height: 10),
-            GridView.builder(
-              shrinkWrap: true,
-              padding: EdgeInsets.zero,
-              physics: NeverScrollableScrollPhysics(),
-              itemCount: statusList.length,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 10, mainAxisSpacing: 10, childAspectRatio: 1.28,),
-              itemBuilder: (context, index) {
-                final item = statusList[index];
-                return Container(
-                  padding: const EdgeInsets.all(18),
-                  decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(18),),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Icon(item['icon'], color: item['color'], size: 26),
-                      SizedBox(height: 6),
-                      Text(item['title'], style: TextStyle(fontSize: 13, color: Colors.grey)),
-                      Text(item['value'], style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                    ],
-                  ),
-                );
-              },
-            ),
-            const SizedBox(height: 25),
-            /// <<< Status =====================================================
+              /// >>> Status =====================================================
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: const [
+                  Text("Status", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  Text("See All") ],
+              ),
+              const SizedBox(height: 10),
+              GridView.builder(
+                shrinkWrap: true,
+                padding: EdgeInsets.zero,
+                physics: NeverScrollableScrollPhysics(),
+                itemCount: statusList.length,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 10, mainAxisSpacing: 10, childAspectRatio: 1.28,),
+                itemBuilder: (context, index) {
+                  final item = statusList[index];
+                  return Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 18,vertical: 10),
+                    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(18),),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(item['icon'], color: item['color'], size: 26),
+                        SizedBox(height: 6),
+                        Text(item['title'], style: TextStyle(fontSize: 13, color: Colors.grey)),
+                        SizedBox(height: 6),
+                        Text(item['value'], style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                      ],
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 25),
+              /// <<< Status =====================================================
 
 
 
-            /// >>> Recent Activity ============================================
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
-                Text("Recent Activities", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                Text("See All")
-              ],
-            ),
-            const SizedBox(height: 10),
-            ...List.generate(3, (index) => _recentActivityCard()),
-            /// <<< Recent Activity ============================================
+              /// >>> Recent Activity ============================================
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: const [
+                  Text("Recent Activities", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  Text("See All")
+                ],
+              ),
+              const SizedBox(height: 10),
+              ...List.generate(3, (index) => _recentActivityCard()),
+              /// <<< Recent Activity ============================================
 
-            SizedBox(height: 50,),
-          ],
+              SizedBox(height: 50,),
+            ],
+          ),
         ),
       ),
     );
   }
-
 
   /// >>> Recent Activity Component ============================================
   Widget _recentActivityCard() {
@@ -178,5 +257,4 @@ class HomePage extends StatelessWidget {
       ),
     );
   }
-  /// <<< Recent Activity Component ============================================
 }

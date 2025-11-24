@@ -14,26 +14,14 @@ class _TaskCreatePageState extends State<TaskCreatePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Create Task"),
-        backgroundColor: Colors.blue,
-      ),
+      appBar: AppBar(title: const Text("Create Task"), backgroundColor: Colors.blue,),
 
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            TextField(
-              controller: titleController,
-              decoration: InputDecoration(
-                hintText: "Task Title...",
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14)),
-              ),
-            ),
-
+            TextField(controller: titleController, decoration: InputDecoration(hintText: "Task Title...", border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),),),
             const SizedBox(height: 20),
-
             ElevatedButton(
               onPressed: () {
                 final now = DateTime.now();
