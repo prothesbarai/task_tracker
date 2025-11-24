@@ -75,7 +75,6 @@ class _LoginPageState extends State<LoginPage> {
   /// >>> Get Phone Number Form Dialogue =======================================
   Future<String?> showPhoneNumberDialog() async {
     TextEditingController controller = TextEditingController();
-
     return await showDialog<String>(
       context: context,
       barrierDismissible: false,
@@ -260,7 +259,6 @@ class _LoginPageState extends State<LoginPage> {
                                           setState(() {emailLoading = true; isLoading = true;});
                                           try{
                                             final userProvider = Provider.of<UserHiveProvider>(context, listen: false);
-
                                             final userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
                                             final uid = userCredential.user!.uid;
                                             final getUserData = await FirebaseFirestore.instance.collection("users").doc(uid).get();

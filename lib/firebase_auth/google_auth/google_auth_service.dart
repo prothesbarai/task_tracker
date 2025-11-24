@@ -15,9 +15,7 @@ class GoogleLoginService {
     ),
   );
 
-  /// ---------------------------------------------------------
-  /// SIGN IN WITH GOOGLE + FIREBASE + FIRESTORE + RETURN USER
-  /// ---------------------------------------------------------
+  /// >>> SIGN IN WITH GOOGLE + FIREBASE + FIRESTORE + RETURN USER =============
   Future signInWithGoogleFirebase() async {
     try {
       final GoogleSignInCredentials? creds = await _googleSignIn.signIn();
@@ -25,18 +23,11 @@ class GoogleLoginService {
 
       final idToken = creds.idToken;
       final accessToken = creds.accessToken;
-
       if (idToken == null) throw Exception("Google ID Token is null");
 
-      final oauthCredential = GoogleAuthProvider.credential(
-        idToken: idToken,
-        accessToken: accessToken,
-      );
-
-      final userCredential =
-      await FirebaseAuth.instance.signInWithCredential(oauthCredential);
+      final oauthCredential = GoogleAuthProvider.credential(idToken: idToken, accessToken: accessToken,);
+      final userCredential = await FirebaseAuth.instance.signInWithCredential(oauthCredential);
       final user = userCredential.user;
-
       if (user == null) return null;
 
       /// >>> Create/Update Firestore User Document
@@ -56,10 +47,13 @@ class GoogleLoginService {
       return null;
     }
   }
+  /// <<< SIGN IN WITH GOOGLE + FIREBASE + FIRESTORE + RETURN USER =============
 
-  /// LOGOUT
+
+  /// >>> LOGOUT ===============================================================
   Future signOut() async {
     await _googleSignIn.signOut();
     await FirebaseAuth.instance.signOut();
   }
+  /// <<< LOGOUT ===============================================================
 }
