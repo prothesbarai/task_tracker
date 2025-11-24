@@ -38,6 +38,7 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xffF5F7FB),
       body: SingleChildScrollView(
+        physics: BouncingScrollPhysics(),
         padding: EdgeInsets.only(top: kToolbarHeight,left: 16,right: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -98,7 +99,7 @@ class HomePage extends StatelessWidget {
               children: const [
                 Text("Status", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 Text("See All") ],
-            ), 
+            ),
             const SizedBox(height: 10),
             GridView.builder(
               shrinkWrap: true,
@@ -139,6 +140,8 @@ class HomePage extends StatelessWidget {
             const SizedBox(height: 10),
             ...List.generate(3, (index) => _recentActivityCard()),
             /// <<< Recent Activity ============================================
+
+            SizedBox(height: 50,),
           ],
         ),
       ),
