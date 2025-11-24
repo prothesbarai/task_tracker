@@ -134,13 +134,13 @@ class _LoginPageState extends State<LoginPage> {
                                 SizedBox(height: kToolbarHeight),
 
 
-                                /// >>> Form Title Start Here ====================
+                                /// >>> Form Title Start Here ==================
                                 Text("Login Form",style:TextStyle(color: AppColors.primaryColor,fontSize: 30,fontWeight: FontWeight.bold), textAlign: TextAlign.center,),
                                 SizedBox(height: 50,),
-                                /// <<< Form Title End Here ======================
+                                /// <<< Form Title End Here ====================
 
 
-                                /// >>> Email Field Start Here ===================
+                                /// >>> Email Field Start Here =================
                                 TextFormField(
                                   decoration: InputDecoration(
                                     hintText: "Email",
@@ -181,10 +181,10 @@ class _LoginPageState extends State<LoginPage> {
                                   },
                                 ),
                                 SizedBox(height: 20,),
-                                /// <<< Email Field End Here =====================
+                                /// <<< Email Field End Here ===================
 
 
-                                /// >>> Password Field Start Here ================
+                                /// >>> Password Field Start Here ==============
                                 TextFormField(
                                   decoration: InputDecoration(
                                     hintText: "Password",
@@ -244,7 +244,7 @@ class _LoginPageState extends State<LoginPage> {
                                   },
                                 ),
                                 SizedBox(height: 20,),
-                                /// <<< Password Field End Here ==================
+                                /// <<< Password Field End Here ================
 
 
                                 /// >>> Login Button Start Here ================
@@ -291,7 +291,7 @@ class _LoginPageState extends State<LoginPage> {
                                       child: emailLoading?Padding(padding: EdgeInsets.symmetric(horizontal: 10.0), child: Text("Wait..",style: TextStyle(fontSize: 20,color: Colors.white.withValues(alpha: 0.5)),),):Padding(padding: EdgeInsets.all(10.0), child: Text("Login",style: TextStyle(fontSize: 20),),)
                                   ),
                                 ),
-                                /// <<< Login Button End Here ==============
+                                /// <<< Login Button End Here ==================
 
 
                                 /// >>> =============== IF You New User So Registration Here And Forgot Password =================
