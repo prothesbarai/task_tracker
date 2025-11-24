@@ -10,27 +10,27 @@ class HomePage extends StatelessWidget {
     final user = Provider.of<UserHiveProvider>(context).user;
     final List<Map<String, dynamic>> statusList = [
       {
-        "title": "Tasks Done",
+        "title": "Today Completed Tasks",
         "value": "05",
         "icon": Icons.check_circle,
         "color": Colors.green,
       },
       {
-        "title": "Pending",
+        "title": "Pending Tasks",
         "value": "03",
         "icon": Icons.access_time,
         "color": Colors.orange,
       },
       {
-        "title": "In Progress",
+        "title": "In Progress Tasks",
         "value": "02",
         "icon": Icons.loop,
         "color": Colors.blue,
       },
       {
-        "title": "Upcoming",
+        "title": "All Tasks",
         "value": "04",
-        "icon": Icons.upcoming,
+        "icon": Icons.all_inbox,
         "color": Colors.purple,
       },
     ];
