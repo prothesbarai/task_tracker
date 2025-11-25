@@ -288,7 +288,6 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
               const SizedBox(height: 10),
-
               StreamBuilder<List<Map<String,dynamic>>>(
                 stream: getRecentActivityStream(),
                 builder: (context, snapshot) {
