@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:task_tracker/date_time_helper/date_time_helper.dart';
@@ -12,7 +14,32 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  TextEditingController taskController = TextEditingController();
+  int totalTasks = 0;
+  TextEditingController taskNameController = TextEditingController();
+  TextEditingController taskProjectNameController = TextEditingController();
+
+
+  @override
+  void initState() {
+    super.initState();
+    loadUserTotalTask();
+  }
+
+
+  /// >>> Show Total Created Task ==============================================
+  void loadUserTotalTask(){
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+    FirebaseDatabase.instance.ref("users/$uid/tasks").onValue.listen((event){
+      final data = event.snapshot.value;
+      if(data == null){
+        setState(() {totalTasks = 0;});
+        return;
+      }
+      final taskMap = Map<String,dynamic>.from(data as Map);
+      setState(() {totalTasks = taskMap.length;});
+    });
+  }
+  /// <<< Show Total Created Task ==============================================
 
 
   /// >>> Create Dialogue ======================================================
@@ -29,7 +56,9 @@ class _HomePageState extends State<HomePage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               /// >>> Task Name Input
-              TextField(controller: taskController, decoration: InputDecoration(labelText: "Task Name", border: OutlineInputBorder(),),),
+              TextField(controller: taskNameController, decoration: InputDecoration(labelText: "Task Name", border: OutlineInputBorder(),),),
+              SizedBox(height: 10,),
+              TextField(controller: taskProjectNameController, decoration: InputDecoration(labelText: "Project Name", border: OutlineInputBorder(),),),
               SizedBox(height: 12),
             ],
           ),
@@ -38,17 +67,21 @@ class _HomePageState extends State<HomePage> {
           actions: [
             ElevatedButton(onPressed: (){ Navigator.pop(context);FocusScope.of(context).unfocus();}, child: Text("Cancel"),),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 FocusScope.of(context).unfocus();
-                if (taskController.text.isNotEmpty) {
-                  print("Task Name: ${taskController.text}");
-                  print("Auto DateTime: $currentDateTime");
-                  // এখানে save করার কোড লিখবে (Firebase/Local)
-                  Navigator.pop(context);
+                if(taskNameController.text.isNotEmpty && taskProjectNameController.text.isNotEmpty) {
+                  final uid = FirebaseAuth.instance.currentUser!.uid;
+                  final taskId = FirebaseDatabase.instance.ref("users/$uid/tasks").push().key;
+                  await FirebaseDatabase.instance.ref("users/$uid/tasks/$taskId").set({"taskName": taskNameController.text, "projectName": taskProjectNameController.text, "createdAt": currentDateTime,});
+                  taskNameController.clear();
+                  taskProjectNameController.clear();
+                  if(!mounted) return;
+                  backPress();
                 }
               },
               child: Text("Save"),
             ),
+
           ],
         );
       },
@@ -56,10 +89,16 @@ class _HomePageState extends State<HomePage> {
   }
   /// <<< Create Dialogue ======================================================
 
+
+  void backPress(){
+    Navigator.pop(context);
+  }
+
   @override
   void dispose() {
+    taskNameController.dispose();
+    taskProjectNameController.dispose();
     super.dispose();
-    taskController.dispose();
   }
 
   @override
@@ -86,7 +125,7 @@ class _HomePageState extends State<HomePage> {
       },
       {
         "title": "All Tasks",
-        "value": "04",
+        "value": totalTasks.toString(),
         "icon": Icons.all_inbox,
         "color": Colors.purple,
       },
