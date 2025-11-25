@@ -72,7 +72,7 @@ class _HomePageState extends State<HomePage> {
                 if(taskNameController.text.isNotEmpty && taskProjectNameController.text.isNotEmpty) {
                   final uid = FirebaseAuth.instance.currentUser!.uid;
                   final taskId = FirebaseDatabase.instance.ref("users/$uid/tasks").push().key;
-                  await FirebaseDatabase.instance.ref("users/$uid/tasks/$taskId").set({"taskName": taskNameController.text, "projectName": taskProjectNameController.text, "createdAt": currentDateTime,});
+                  await FirebaseDatabase.instance.ref("users/$uid/tasks/$taskId").set({"taskName": taskNameController.text, "projectName": taskProjectNameController.text,"status" : "Assigned", "singleTaskTotalPlayHour" : "","createdAt": currentDateTime,});
                   taskNameController.clear();
                   taskProjectNameController.clear();
                   if(!mounted) return;
@@ -110,24 +110,32 @@ class _HomePageState extends State<HomePage> {
         "value": "05",
         "icon": Icons.check_circle,
         "color": Colors.green,
+        "status": "Pending",
+        "singleTaskTotalPlayHour": "",
       },
       {
         "title": "Pending Tasks",
         "value": "03",
         "icon": Icons.access_time,
         "color": Colors.orange,
+        "status": "Pending",
+        "singleTaskTotalPlayHour": "",
       },
       {
         "title": "In Progress Tasks",
         "value": "02",
         "icon": Icons.loop,
-        "color": Colors.blue,
+        "color": Colors.orange,
+        "status": "Pending",
+        "singleTaskTotalPlayHour": "",
       },
       {
         "title": "All Tasks",
         "value": totalTasks.toString(),
         "icon": Icons.all_inbox,
-        "color": Colors.purple,
+        "color": Colors.orange,
+        "status": "Pending",
+        "singleTaskTotalPlayHour": "",
       },
     ];
 
