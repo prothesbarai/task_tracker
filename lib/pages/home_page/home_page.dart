@@ -14,11 +14,11 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   TextEditingController taskController = TextEditingController();
 
-  void openCreateTaskDialog() {
 
+  /// >>> Create Dialogue ======================================================
+  void openCreateTaskDialog() {
     DateTime dateTime = DateTime.now();
     final currentDateTime = DateTimeHelper.formatDateTime(dateTime);
-
     showDialog(
       context: context,
       builder: (context) {
@@ -28,13 +28,13 @@ class _HomePageState extends State<HomePage> {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              /// Task Name Input
+              /// >>> Task Name Input
               TextField(controller: taskController, decoration: InputDecoration(labelText: "Task Name", border: OutlineInputBorder(),),),
               SizedBox(height: 12),
             ],
           ),
 
-          /// Buttons
+          /// >>> Buttons
           actions: [
             ElevatedButton(onPressed: (){ Navigator.pop(context);FocusScope.of(context).unfocus();}, child: Text("Cancel"),),
             ElevatedButton(
@@ -54,7 +54,7 @@ class _HomePageState extends State<HomePage> {
       },
     );
   }
-
+  /// <<< Create Dialogue ======================================================
 
   @override
   void dispose() {
@@ -122,7 +122,7 @@ class _HomePageState extends State<HomePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
 
-              /// >>> USER SECTION ===============================================
+              /// >>> USER SECTION =============================================
               Row(
                 children: [
                   CircleAvatar(
@@ -141,9 +141,9 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
               const SizedBox(height: 20),
-              /// <<< USER SECTION ===============================================
+              /// <<< USER SECTION =============================================
 
-              /// >>> Daily Meeting ==============================================
+              /// >>> Daily Meeting ============================================
               Container(
                 padding: const EdgeInsets.all(18),
                 decoration: BoxDecoration(color: Colors.deepPurple.shade100, borderRadius: BorderRadius.circular(16),),
@@ -168,10 +168,10 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               const SizedBox(height: 25),
-              /// <<< Daily Meeting ==============================================
+              /// <<< Daily Meeting ============================================
 
 
-              /// >>> Status =====================================================
+              /// >>> Status ===================================================
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: const [
@@ -204,11 +204,11 @@ class _HomePageState extends State<HomePage> {
                 },
               ),
               const SizedBox(height: 25),
-              /// <<< Status =====================================================
+              /// <<< Status ===================================================
 
 
 
-              /// >>> Recent Activity ============================================
+              /// >>> Recent Activity ==========================================
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: const [
@@ -218,7 +218,7 @@ class _HomePageState extends State<HomePage> {
               ),
               const SizedBox(height: 10),
               ...List.generate(3, (index) => _recentActivityCard()),
-              /// <<< Recent Activity ============================================
+              /// <<< Recent Activity ==========================================
 
               SizedBox(height: 50,),
             ],
