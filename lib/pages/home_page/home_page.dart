@@ -214,6 +214,7 @@ class _HomePageState extends State<HomePage> {
               const SizedBox(height: 20),
               /// <<< USER SECTION =============================================
 
+              
               /// >>> Daily Meeting ============================================
               Container(
                 padding: const EdgeInsets.all(18),
@@ -276,7 +277,6 @@ class _HomePageState extends State<HomePage> {
               ),
               const SizedBox(height: 25),
               /// <<< Status ===================================================
-
 
 
               /// >>> Recent Activity ==========================================
