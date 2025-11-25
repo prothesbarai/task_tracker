@@ -335,4 +335,5 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+  /// <<< Recent Activity Component ============================================
 }
