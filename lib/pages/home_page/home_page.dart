@@ -319,10 +319,12 @@ class _HomePageState extends State<HomePage> {
     String durationText = DateTimeHelper.formatDuration(totalSeconds);
     return StatefulBuilder(
       builder: (context, setState) {
+        Color cardColor;
+        if (isPlaying) {cardColor = Colors.blue[100]!;} else if (status == "Paused") {cardColor = Colors.orange[100]!;} else if (status == "Completed") {cardColor = Colors.green[100]!;} else {cardColor = Colors.white;}
         return Container(
           margin: const EdgeInsets.only(bottom: 12),
           padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(color: isPlaying ? Colors.blue[100] :Colors.white, borderRadius: BorderRadius.circular(18),),
+          decoration: BoxDecoration(color: cardColor, borderRadius: BorderRadius.circular(18),),
           child: Row(
             children: [
               Icon(Icons.task, color: Colors.blue, size: 30),
@@ -338,48 +340,55 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
               ),
-              Row(
-                children: [
-                  IconButton(
-                    icon: Icon(isPlaying ? Icons.pause_circle : Icons.play_circle, color: Colors.blue, size: 30,),
-                    onPressed: () async {
-                      final uid = FirebaseAuth.instance.currentUser!.uid;
-                      final taskRef = FirebaseDatabase.instance.ref("users/$uid/tasks");
-                      final snapshot = await taskRef.get();
-                      final tasksData = snapshot.value as Map?;
-                      if (tasksData == null) return;
-                      if (!isPlaying) {
-                        // Check if any other task is already playing
-                        bool anyOtherPlaying = tasksData.entries.any((entry) {final otherTask = Map<String, dynamic>.from(entry.value);return otherTask["isPlaying"] == true;});
-                        if (anyOtherPlaying) {
-                          if (!mounted) return;
-                          sMessage();
-                          return;
+              if(status == "Playing" || status == "Paused" || status == "Assigned")...[
+                Row(
+                  children: [
+                    IconButton(
+                      icon: Icon(isPlaying ? Icons.pause_circle : Icons.play_circle, color: Colors.blue, size: 30,),
+                      onPressed: () async {
+                        final uid = FirebaseAuth.instance.currentUser!.uid;
+                        final taskRef = FirebaseDatabase.instance.ref("users/$uid/tasks");
+                        final snapshot = await taskRef.get();
+                        final tasksData = snapshot.value as Map?;
+                        if (tasksData == null) return;
+                        if (!isPlaying) {
+                          // Check if any other task is already playing
+                          bool anyOtherPlaying = tasksData.entries.any((entry) {final otherTask = Map<String, dynamic>.from(entry.value);return otherTask["isPlaying"] == true;});
+                          if (anyOtherPlaying) {
+                            if (!mounted) return;
+                            sMessage();
+                            return;
+                          }
+                          // Start the selected task
+                          final currentTimeStamp = DateTime.now().millisecondsSinceEpoch;
+                          await taskRef.child(taskId).update({"isPlaying": true, "lastPlayStartTime": currentTimeStamp,"status" : "Playing"});
+                          setState(() { isPlaying = true; });
+                        } else {
+                          // Pause the selected task
+                          final data = tasksData[taskId] as Map;
+                          int lastPlayStartTime = data["lastPlayStartTime"] ?? 0;
+                          int oldTotalSeconds = int.tryParse(data["singleTaskTotalPlayHour"] ?? "0") ?? 0;
+                          int addedSeconds = ((DateTime.now().millisecondsSinceEpoch - lastPlayStartTime) / 1000).round();
+                          int newTotalSeconds = oldTotalSeconds + addedSeconds;
+                          await taskRef.child(taskId).update({"isPlaying": false, "singleTaskTotalPlayHour": newTotalSeconds.toString(),"status" : "Paused"});
+                          setState(() { isPlaying = false; });
                         }
-                        // Start the selected task
-                        final currentTimeStamp = DateTime.now().millisecondsSinceEpoch;
-                        await taskRef.child(taskId).update({"isPlaying": true, "lastPlayStartTime": currentTimeStamp,"status" : "Playing"});
-                        setState(() { isPlaying = true; });
-                      } else {
-                        // Pause the selected task
-                        final data = tasksData[taskId] as Map;
-                        int lastPlayStartTime = data["lastPlayStartTime"] ?? 0;
-                        int oldTotalSeconds = int.tryParse(data["singleTaskTotalPlayHour"] ?? "0") ?? 0;
-                        int addedSeconds = ((DateTime.now().millisecondsSinceEpoch - lastPlayStartTime) / 1000).round();
-                        int newTotalSeconds = oldTotalSeconds + addedSeconds;
-                        await taskRef.child(taskId).update({"isPlaying": false, "singleTaskTotalPlayHour": newTotalSeconds.toString(),"status" : "Paused"});
-                        setState(() { isPlaying = false; });
-                      }
-                    },
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.check_circle, color: Colors.blue, size: 30,),
-                    onPressed: () {
-
-                    },
-                  ),
-                ],
-              )
+                      },
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.check_circle, color: Colors.blue, size: 30,),
+                      onPressed: () async{
+                        final uid = FirebaseAuth.instance.currentUser!.uid;
+                        final taskRef = FirebaseDatabase.instance.ref("users/$uid/tasks");
+                        final snapshot = await taskRef.get();
+                        final tasksData = snapshot.value as Map?;
+                        if (tasksData == null) return;
+                        await taskRef.child(taskId).update({"isPlaying": false,"status" : "Completed"});
+                      },
+                    ),
+                  ],
+                )
+              ]
             ],
           ),
         );
