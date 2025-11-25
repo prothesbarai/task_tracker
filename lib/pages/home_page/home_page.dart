@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +18,7 @@ class _HomePageState extends State<HomePage> {
   int totalTasks = 0;
   TextEditingController taskNameController = TextEditingController();
   TextEditingController taskProjectNameController = TextEditingController();
-
+  StreamSubscription? _taskSubscription;
 
   @override
   void initState() {
@@ -29,7 +30,8 @@ class _HomePageState extends State<HomePage> {
   /// >>> Show Total Created Task ==============================================
   void loadUserTotalTask(){
     final uid = FirebaseAuth.instance.currentUser!.uid;
-    FirebaseDatabase.instance.ref("users/$uid/tasks").onValue.listen((event){
+    _taskSubscription?.cancel();// Cancel old subscription if exists
+    _taskSubscription = FirebaseDatabase.instance.ref("users/$uid/tasks").onValue.listen((event){
       final data = event.snapshot.value;
       if(data == null){
         setState(() {totalTasks = 0;});
@@ -119,10 +121,14 @@ class _HomePageState extends State<HomePage> {
   void backPress(){
     Navigator.pop(context);
   }
+  void sMessage(){
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Only one task can play at a time!")));
+  }
   @override
   void dispose() {
     taskNameController.dispose();
     taskProjectNameController.dispose();
+    _taskSubscription?.cancel();
     super.dispose();
   }
 
@@ -316,15 +322,10 @@ class _HomePageState extends State<HomePage> {
         return Container(
           margin: const EdgeInsets.only(bottom: 12),
           padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(18),),
+          decoration: BoxDecoration(color: isPlaying ? Colors.blue[100] :Colors.white, borderRadius: BorderRadius.circular(18),),
           child: Row(
             children: [
-              Container(
-                height: 50,
-                width: 50,
-                decoration: BoxDecoration(color: Colors.blue.shade100, borderRadius: BorderRadius.circular(12),),
-                child: const Icon(Icons.task, color: Colors.blue, size: 30),
-              ),
+              Icon(Icons.task, color: Colors.blue, size: 30),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -351,14 +352,13 @@ class _HomePageState extends State<HomePage> {
                         // Check if any other task is already playing
                         bool anyOtherPlaying = tasksData.entries.any((entry) {final otherTask = Map<String, dynamic>.from(entry.value);return otherTask["isPlaying"] == true;});
                         if (anyOtherPlaying) {
-                          // Show a message: "Only one task can play at a time"
                           if (!mounted) return;
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Only one task can play at a time!")));
+                          sMessage();
                           return;
                         }
                         // Start the selected task
                         final currentTimeStamp = DateTime.now().millisecondsSinceEpoch;
-                        await taskRef.child(taskId).update({"isPlaying": true, "lastPlayStartTime": currentTimeStamp,});
+                        await taskRef.child(taskId).update({"isPlaying": true, "lastPlayStartTime": currentTimeStamp,"status" : "Playing"});
                         setState(() { isPlaying = true; });
                       } else {
                         // Pause the selected task
@@ -367,7 +367,7 @@ class _HomePageState extends State<HomePage> {
                         int oldTotalSeconds = int.tryParse(data["singleTaskTotalPlayHour"] ?? "0") ?? 0;
                         int addedSeconds = ((DateTime.now().millisecondsSinceEpoch - lastPlayStartTime) / 1000).round();
                         int newTotalSeconds = oldTotalSeconds + addedSeconds;
-                        await taskRef.child(taskId).update({"isPlaying": false, "singleTaskTotalPlayHour": newTotalSeconds.toString(),});
+                        await taskRef.child(taskId).update({"isPlaying": false, "singleTaskTotalPlayHour": newTotalSeconds.toString(),"status" : "Paused"});
                         setState(() { isPlaying = false; });
                       }
                     },
