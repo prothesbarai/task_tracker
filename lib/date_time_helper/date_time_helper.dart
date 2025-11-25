@@ -30,4 +30,18 @@ class DateTimeHelper {
     final amPm = date.hour >= 12 ? "PM" : "AM";
     return "${hour.toString().padLeft(2, '0')}:$minute $amPm";
   }
+
+
+  static String formatDuration(int totalSeconds) {
+    if(totalSeconds < 0) totalSeconds = 0;
+    final hours = totalSeconds ~/ 3600;
+    final minutes = (totalSeconds % 3600) ~/ 60;
+    final seconds = totalSeconds % 60;
+    return "${hours.toString().padLeft(2,'0')}:${minutes.toString().padLeft(2,'0')}:${seconds.toString().padLeft(2,'0')}";
+  }
+
+
+
+
+
 }

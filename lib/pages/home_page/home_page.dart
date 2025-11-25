@@ -72,7 +72,7 @@ class _HomePageState extends State<HomePage> {
                 if(taskNameController.text.isNotEmpty && taskProjectNameController.text.isNotEmpty) {
                   final uid = FirebaseAuth.instance.currentUser!.uid;
                   final taskId = FirebaseDatabase.instance.ref("users/$uid/tasks").push().key;
-                  await FirebaseDatabase.instance.ref("users/$uid/tasks/$taskId").set({"taskName": taskNameController.text, "projectName": taskProjectNameController.text,"status" : "Assigned", "singleTaskTotalPlayHour" : "", "isPlaying":false, "createdAt": currentDateTime,});
+                  await FirebaseDatabase.instance.ref("users/$uid/tasks/$taskId").set({"taskName": taskNameController.text, "projectName": taskProjectNameController.text,"status" : "Assigned", "singleTaskTotalPlayHour" : "", "lastPlayStartTime" : "","isPlaying":false, "createdAt": currentDateTime,});
                   taskNameController.clear();
                   taskProjectNameController.clear();
                   if(!mounted) return;
@@ -107,6 +107,7 @@ class _HomePageState extends State<HomePage> {
           "createdAt": tasks["createdAt"] ?? "",
           "status": tasks["status"] ?? "",
           "isPlaying": tasks["isPlaying"] ?? false,
+          "singleTaskTotalPlayHour": tasks["singleTaskTotalPlayHour"] ?? false,
         };
       }).toList();
     });
@@ -293,7 +294,7 @@ class _HomePageState extends State<HomePage> {
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {return const Center(child: CircularProgressIndicator());}
                   if (snapshot.data!.isEmpty) {return const Text("No Recent Activities Found");}
-                  return Column(children: snapshot.data!.map((tasks) {return _recentActivityCard(taskName: tasks["taskName"], createdAt: tasks["createdAt"], isPlaying: tasks["isPlaying"], status: tasks["status"],);}).toList(),);
+                  return Column(children: snapshot.data!.map((tasks) {return _recentActivityCard(taskId: tasks["id"],taskName: tasks["taskName"], createdAt: tasks["createdAt"], isPlaying: tasks["isPlaying"], status: tasks["status"],totalTime: tasks["singleTaskTotalPlayHour"] ?? "0",);}).toList(),);
                 },
               ),
               /// <<< Recent Activity ==========================================
@@ -307,9 +308,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   /// >>> Recent Activity Component ============================================
-  Widget _recentActivityCard({required String taskName, required String createdAt, required bool isPlaying, required String status,}) {
-    bool localIsPlaying = isPlaying;
-
+  Widget _recentActivityCard({required String taskId,required String taskName, required String createdAt, required bool isPlaying, required String status,required String totalTime}) {
+    int totalSeconds = int.tryParse(totalTime) ?? 0;
+    String durationText = DateTimeHelper.formatDuration(totalSeconds);
     return StatefulBuilder(
       builder: (context, setState) {
         return Container(
@@ -332,22 +333,47 @@ class _HomePageState extends State<HomePage> {
                     Text(taskName, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 4),
                     Text("$status | $createdAt"),
+                    Text("Time Played: $durationText", style: TextStyle(fontSize: 14, color: Colors.grey)),
                   ],
                 ),
               ),
               Row(
                 children: [
                   IconButton(
-                    icon: Icon(localIsPlaying ? Icons.pause_circle : Icons.play_circle, color: Colors.blue, size: 32,),
-                    onPressed: () {
-                      setState(() {
-                        localIsPlaying = !localIsPlaying;
-                      });
+                    icon: Icon(isPlaying ? Icons.pause_circle : Icons.play_circle, color: Colors.blue, size: 30,),
+                    onPressed: () async {
+                      final uid = FirebaseAuth.instance.currentUser!.uid;
+                      final taskRef = FirebaseDatabase.instance.ref("users/$uid/tasks");
+                      final snapshot = await taskRef.get();
+                      final tasksData = snapshot.value as Map?;
+                      if (tasksData == null) return;
+                      if (!isPlaying) {
+                        // Check if any other task is already playing
+                        bool anyOtherPlaying = tasksData.entries.any((entry) {final otherTask = Map<String, dynamic>.from(entry.value);return otherTask["isPlaying"] == true;});
+                        if (anyOtherPlaying) {
+                          // Show a message: "Only one task can play at a time"
+                          if (!mounted) return;
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Only one task can play at a time!")));
+                          return;
+                        }
+                        // Start the selected task
+                        final currentTimeStamp = DateTime.now().millisecondsSinceEpoch;
+                        await taskRef.child(taskId).update({"isPlaying": true, "lastPlayStartTime": currentTimeStamp,});
+                        setState(() { isPlaying = true; });
+                      } else {
+                        // Pause the selected task
+                        final data = tasksData[taskId] as Map;
+                        int lastPlayStartTime = data["lastPlayStartTime"] ?? 0;
+                        int oldTotalSeconds = int.tryParse(data["singleTaskTotalPlayHour"] ?? "0") ?? 0;
+                        int addedSeconds = ((DateTime.now().millisecondsSinceEpoch - lastPlayStartTime) / 1000).round();
+                        int newTotalSeconds = oldTotalSeconds + addedSeconds;
+                        await taskRef.child(taskId).update({"isPlaying": false, "singleTaskTotalPlayHour": newTotalSeconds.toString(),});
+                        setState(() { isPlaying = false; });
+                      }
                     },
                   ),
-
                   IconButton(
-                    icon: Icon(Icons.check_circle, color: Colors.blue, size: 32,),
+                    icon: Icon(Icons.check_circle, color: Colors.blue, size: 30,),
                     onPressed: () {
 
                     },

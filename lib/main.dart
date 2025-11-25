@@ -18,7 +18,10 @@ void main() async{
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown,]),
   ]);
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(statusBarColor: Colors.transparent, systemNavigationBarColor: Colors.transparent, systemNavigationBarDividerColor: Colors.transparent, statusBarIconBrightness: Brightness.light, systemNavigationBarIconBrightness: Brightness.light,),);
-  await Firebase.initializeApp();
+  // FIX — prevent reinitialization
+  if (Firebase.apps.isEmpty) {
+    await Firebase.initializeApp();
+  }
   // Hive Initialization
   await HiveService.initHive();
   runApp(MultiProvider(
