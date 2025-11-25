@@ -72,7 +72,7 @@ class _HomePageState extends State<HomePage> {
                 if(taskNameController.text.isNotEmpty && taskProjectNameController.text.isNotEmpty) {
                   final uid = FirebaseAuth.instance.currentUser!.uid;
                   final taskId = FirebaseDatabase.instance.ref("users/$uid/tasks").push().key;
-                  await FirebaseDatabase.instance.ref("users/$uid/tasks/$taskId").set({"taskName": taskNameController.text, "projectName": taskProjectNameController.text,"status" : "Assigned", "singleTaskTotalPlayHour" : "","createdAt": currentDateTime,});
+                  await FirebaseDatabase.instance.ref("users/$uid/tasks/$taskId").set({"taskName": taskNameController.text, "projectName": taskProjectNameController.text,"status" : "Assigned", "singleTaskTotalPlayHour" : "", "isPlaying":false, "createdAt": currentDateTime,});
                   taskNameController.clear();
                   taskProjectNameController.clear();
                   if(!mounted) return;
@@ -90,10 +90,34 @@ class _HomePageState extends State<HomePage> {
   /// <<< Create Dialogue ======================================================
 
 
+
+  /// >>> Fetch Recent Activities From Firebase ================================
+  Stream<List<Map<String, dynamic>>> getRecentActivityStream() {
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+    final ref = FirebaseDatabase.instance.ref("users/$uid/tasks");
+    return ref.onValue.map((event) {
+      final data = event.snapshot.value as Map?;
+      if (data == null) return [];
+      return data.entries.map((entry) {
+        final tasks = Map.from(entry.value);
+        return {
+          "id": entry.key,
+          "taskName": tasks["taskName"] ?? "",
+          "projectName": tasks["projectName"] ?? "",
+          "createdAt": tasks["createdAt"] ?? "",
+          "status": tasks["status"] ?? "",
+          "isPlaying": tasks["isPlaying"] ?? false,
+        };
+      }).toList();
+    });
+  }
+  /// <<< Fetch Recent Activities From Firebase ================================
+
+
+
   void backPress(){
     Navigator.pop(context);
   }
-
   @override
   void dispose() {
     taskNameController.dispose();
@@ -264,7 +288,15 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
               const SizedBox(height: 10),
-              ...List.generate(3, (index) => _recentActivityCard()),
+
+              StreamBuilder<List<Map<String,dynamic>>>(
+                stream: getRecentActivityStream(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {return const Center(child: CircularProgressIndicator());}
+                  if (snapshot.data!.isEmpty) {return const Text("No Recent Activities Found");}
+                  return Column(children: snapshot.data!.map((tasks) {return _recentActivityCard(taskName: tasks["taskName"], createdAt: tasks["createdAt"], isPlaying: tasks["isPlaying"], status: tasks["status"],);}).toList(),);
+                },
+              ),
               /// <<< Recent Activity ==========================================
 
               SizedBox(height: 50,),
@@ -276,7 +308,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   /// >>> Recent Activity Component ============================================
-  Widget _recentActivityCard() {
+  Widget _recentActivityCard({required String taskName, required String createdAt, required bool isPlaying, required String status}) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
@@ -293,10 +325,10 @@ class _HomePageState extends State<HomePage> {
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                Text("Daily Standup Meeting", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              children: [
+                Text(taskName, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 SizedBox(height: 4),
-                Text("Completed at 09:00 AM"),
+                Text("$status|$createdAt"),
               ],
             ),
           ),
