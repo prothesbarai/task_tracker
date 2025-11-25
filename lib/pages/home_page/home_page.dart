@@ -307,33 +307,58 @@ class _HomePageState extends State<HomePage> {
   }
 
   /// >>> Recent Activity Component ============================================
-  Widget _recentActivityCard({required String taskName, required String createdAt, required bool isPlaying, required String status}) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(18),),
-      child: Row(
-        children: [
-          Container(
-            height: 50,
-            width: 50,
-            decoration: BoxDecoration(color: Colors.blue.shade100, borderRadius: BorderRadius.circular(12),),
-            child: const Icon(Icons.task, color: Colors.blue, size: 30),
+  Widget _recentActivityCard({required String taskName, required String createdAt, required bool isPlaying, required String status,}) {
+    bool localIsPlaying = isPlaying;
+
+    return StatefulBuilder(
+      builder: (context, setState) {
+        return Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(18),),
+          child: Row(
+            children: [
+              Container(
+                height: 50,
+                width: 50,
+                decoration: BoxDecoration(color: Colors.blue.shade100, borderRadius: BorderRadius.circular(12),),
+                child: const Icon(Icons.task, color: Colors.blue, size: 30),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(taskName, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 4),
+                    Text("$status | $createdAt"),
+                  ],
+                ),
+              ),
+              Row(
+                children: [
+                  IconButton(
+                    icon: Icon(localIsPlaying ? Icons.pause_circle : Icons.play_circle, color: Colors.blue, size: 32,),
+                    onPressed: () {
+                      setState(() {
+                        localIsPlaying = !localIsPlaying;
+                      });
+                    },
+                  ),
+
+                  IconButton(
+                    icon: Icon(Icons.check_circle, color: Colors.blue, size: 32,),
+                    onPressed: () {
+
+                    },
+                  ),
+                ],
+              )
+            ],
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(taskName, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                SizedBox(height: 4),
-                Text("$status|$createdAt"),
-              ],
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
-  /// <<< Recent Activity Component ============================================
+/// <<< Recent Activity Component ============================================
 }
