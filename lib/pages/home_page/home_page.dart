@@ -97,10 +97,12 @@ class _HomePageState extends State<HomePage> {
   Stream<List<Map<String, dynamic>>> getRecentActivityStream() {
     final uid = FirebaseAuth.instance.currentUser!.uid;
     final ref = FirebaseDatabase.instance.ref("users/$uid/tasks");
+
     return ref.onValue.map((event) {
       final data = event.snapshot.value as Map?;
       if (data == null) return [];
-      return data.entries.map((entry) {
+      // Convert Map → List
+      List<Map<String, dynamic>> taskList = data.entries.map((entry) {
         final tasks = Map.from(entry.value);
         return {
           "id": entry.key,
@@ -109,9 +111,13 @@ class _HomePageState extends State<HomePage> {
           "createdAt": tasks["createdAt"] ?? "",
           "status": tasks["status"] ?? "",
           "isPlaying": tasks["isPlaying"] ?? false,
-          "singleTaskTotalPlayHour": tasks["singleTaskTotalPlayHour"] ?? false,
+          "singleTaskTotalPlayHour": tasks["singleTaskTotalPlayHour"] ?? "0",
         };
       }).toList();
+
+      // Sort by createdAt
+      taskList.sort((a, b) {return b["createdAt"].toString().compareTo(a["createdAt"].toString());});
+      return taskList;
     });
   }
   /// <<< Fetch Recent Activities From Firebase ================================
@@ -141,31 +147,31 @@ class _HomePageState extends State<HomePage> {
         "value": "05",
         "icon": Icons.check_circle,
         "color": Colors.green,
-        "status": "Pending",
+        "status": "Completed",
         "singleTaskTotalPlayHour": "",
       },
       {
-        "title": "Pending Tasks",
+        "title": "Assign Tasks",
         "value": "03",
-        "icon": Icons.access_time,
-        "color": Colors.orange,
-        "status": "Pending",
+        "icon": Icons.assignment_outlined,
+        "color": Colors.pinkAccent,
+        "status": "Assigned",
         "singleTaskTotalPlayHour": "",
       },
       {
-        "title": "In Progress Tasks",
+        "title": "In Running Tasks",
         "value": "02",
-        "icon": Icons.loop,
-        "color": Colors.orange,
-        "status": "Pending",
+        "icon": Icons.play_circle_fill,
+        "color": Colors.blue,
+        "status": "Running",
         "singleTaskTotalPlayHour": "",
       },
       {
         "title": "All Tasks",
         "value": totalTasks.toString(),
         "icon": Icons.all_inbox,
-        "color": Colors.orange,
-        "status": "Pending",
+        "color": Colors.brown,
+        "status": "All",
         "singleTaskTotalPlayHour": "",
       },
     ];
