@@ -22,29 +22,6 @@ class _HomePageState extends State<HomePage> {
   TextEditingController taskProjectNameController = TextEditingController();
   StreamSubscription? _taskSubscription;
 
-  @override
-  void initState() {
-    super.initState();
-    loadUserTotalTask();
-  }
-
-
-  /// >>> Show Total Created Task ==============================================
-  void loadUserTotalTask(){
-    final uid = FirebaseAuth.instance.currentUser!.uid;
-    _taskSubscription?.cancel();// Cancel old subscription if exists
-    _taskSubscription = FirebaseDatabase.instance.ref("users/$uid/tasks").onValue.listen((event){
-      final data = event.snapshot.value;
-      if(data == null){
-        setState(() {totalTasks = 0;});
-        return;
-      }
-      final taskMap = Map<String,dynamic>.from(data as Map);
-      setState(() {totalTasks = taskMap.length;});
-    });
-  }
-  /// <<< Show Total Created Task ==============================================
-
 
   /// >>> Create Dialogue ======================================================
   void openCreateTaskDialog() {
@@ -92,7 +69,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
   /// <<< Create Dialogue ======================================================
-
 
 
   /// >>> Fetch Recent Activities From Firebase ================================
@@ -170,6 +146,7 @@ class _HomePageState extends State<HomePage> {
     _taskSubscription?.cancel();
     super.dispose();
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -319,7 +296,7 @@ class _HomePageState extends State<HomePage> {
                 stream: getRecentActivityStream(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {return const Center(child: CircularProgressIndicator());}
-                  if (snapshot.data!.isEmpty) {return const Text("No Recent Activities Found");}
+                  if (snapshot.data!.isEmpty) {return const Text("Today No Activities Found");}
                   return Column(children: snapshot.data!.map((tasks) {return listItemsCard(context: context,taskId: tasks["id"],projectName:tasks["projectName"],taskName: tasks["taskName"], createdAt: tasks["createdAt"], isPlaying: tasks["isPlaying"], status: tasks["status"],totalTime: tasks["singleTaskTotalPlayHour"] ?? "0",);}).toList(),);
                 },
               ),
