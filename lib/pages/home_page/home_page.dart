@@ -7,6 +7,7 @@ import 'package:task_tracker/date_time_helper/date_time_helper.dart';
 import '../../firebase_auth/email_auth/provider/user_hive_provider.dart';
 import '../../utils/constant/app_colors.dart';
 import '../../widgets/list_items_card.dart';
+import '../show_diff_task_pages/total_all_task.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -116,8 +117,18 @@ class _HomePageState extends State<HomePage> {
         };
       }).toList();
 
-      // Sort by createdAt
+      // >>> For Only Today task
+      String today = DateTimeHelper.formatDateOnly(DateTime.now());
+      taskList = taskList.where((task) {
+        String createdDate = task["createdAt"].toString();
+        String createdDateOnly = createdDate.split(",")[0];
+        return createdDateOnly == today;
+      }).toList();
+      // <<< For Only Today task
+
+      // >>> Sort by createdAt
       taskList.sort((a, b) {return b["createdAt"].toString().compareTo(a["createdAt"].toString());});
+      // <<< Sort by createdAt
       return taskList;
     });
   }
@@ -298,9 +309,9 @@ class _HomePageState extends State<HomePage> {
               /// >>> Recent Activity ==========================================
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: const [
+                children: [
                   Text("Recent Activities", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                  Text("See All")
+                  GestureDetector(onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => TotalAllTask(),)),child: Text("See All"))
                 ],
               ),
               const SizedBox(height: 10),
