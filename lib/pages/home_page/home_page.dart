@@ -27,6 +27,7 @@ class _HomePageState extends State<HomePage> {
   void openCreateTaskDialog() {
     DateTime dateTime = DateTime.now();
     final currentDateTime = DateTimeHelper.formatDateTime(dateTime);
+    final createdDateOnly = DateTimeHelper.formatDateOnly(dateTime);
     showDialog(
       context: context,
       builder: (context) {
@@ -53,7 +54,7 @@ class _HomePageState extends State<HomePage> {
                 if(taskNameController.text.isNotEmpty && taskProjectNameController.text.isNotEmpty) {
                   final uid = FirebaseAuth.instance.currentUser!.uid;
                   final taskId = FirebaseDatabase.instance.ref("users/$uid/tasks").push().key;
-                  await FirebaseDatabase.instance.ref("users/$uid/tasks/$taskId").set({"taskName": taskNameController.text, "projectName": taskProjectNameController.text,"status" : "Assigned", "singleTaskTotalPlayHour" : "", "lastPlayStartTime" : "","isPlaying":false, "createdAt": currentDateTime,});
+                  await FirebaseDatabase.instance.ref("users/$uid/tasks/$taskId").set({"taskName": taskNameController.text, "projectName": taskProjectNameController.text,"status" : "Assigned", "singleTaskTotalPlayHour" : "", "lastPlayStartTime" : "","isPlaying":false, "createdAt": currentDateTime, "createdDateOnly" : createdDateOnly});
                   taskNameController.clear();
                   taskProjectNameController.clear();
                   if(!mounted) return;
@@ -74,7 +75,9 @@ class _HomePageState extends State<HomePage> {
   /// >>> Fetch Recent Activities From Firebase ================================
   Stream<List<Map<String, dynamic>>> getRecentActivityStream() {
     final uid = FirebaseAuth.instance.currentUser!.uid;
-    final ref = FirebaseDatabase.instance.ref("users/$uid/tasks");
+    String today = DateTimeHelper.formatDateOnly(DateTime.now());
+    // >>> For Only Today task Function =>   .orderByChild("createdDateOnly").equalTo(today);
+    final ref = FirebaseDatabase.instance.ref("users/$uid/tasks").orderByChild("createdDateOnly").equalTo(today);
 
     return ref.onValue.map((event) {
       final data = event.snapshot.value as Map?;
@@ -92,15 +95,6 @@ class _HomePageState extends State<HomePage> {
           "singleTaskTotalPlayHour": tasks["singleTaskTotalPlayHour"] ?? "0",
         };
       }).toList();
-
-      // >>> For Only Today task
-      String today = DateTimeHelper.formatDateOnly(DateTime.now());
-      taskList = taskList.where((task) {
-        String createdDate = task["createdAt"].toString();
-        String createdDateOnly = createdDate.split(",")[0];
-        return createdDateOnly == today;
-      }).toList();
-      // <<< For Only Today task
 
       // >>> Sort by createdAt
       taskList.sort((a, b) {return b["createdAt"].toString().compareTo(a["createdAt"].toString());});
