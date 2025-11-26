@@ -323,7 +323,7 @@ class _HomePageState extends State<HomePage> {
               ),
               /// <<< Recent Activity ==========================================
 
-              SizedBox(height: 50,),
+              SizedBox(height: 150,),
             ],
           ),
         ),
