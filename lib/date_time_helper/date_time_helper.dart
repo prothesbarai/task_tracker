@@ -40,15 +40,4 @@ class DateTimeHelper {
     return "${hours.toString().padLeft(2,'0')}:${minutes.toString().padLeft(2,'0')}:${seconds.toString().padLeft(2,'0')}";
   }
 
-
-  static String formatDate(DateTime dateTime) {
-    return "${dateTime.year}-${dateTime.month.toString().padLeft(2,'0')}-${dateTime.day.toString().padLeft(2,'0')}";
-  }
-
-
-  static parseDateTime(String dateString) {
-    return DateTime.parse(dateString);
-  }
-
-
 }
