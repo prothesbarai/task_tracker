@@ -300,7 +300,7 @@ class _HomePageState extends State<HomePage> {
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {return const Center(child: CircularProgressIndicator());}
                   if (snapshot.data!.isEmpty) {return const Text("No Recent Activities Found");}
-                  return Column(children: snapshot.data!.map((tasks) {return _recentActivityCard(taskId: tasks["id"],taskName: tasks["taskName"], createdAt: tasks["createdAt"], isPlaying: tasks["isPlaying"], status: tasks["status"],totalTime: tasks["singleTaskTotalPlayHour"] ?? "0",);}).toList(),);
+                  return Column(children: snapshot.data!.map((tasks) {return _recentActivityCard(taskId: tasks["id"],projectName:tasks["projectName"],taskName: tasks["taskName"], createdAt: tasks["createdAt"], isPlaying: tasks["isPlaying"], status: tasks["status"],totalTime: tasks["singleTaskTotalPlayHour"] ?? "0",);}).toList(),);
                 },
               ),
               /// <<< Recent Activity ==========================================
@@ -314,7 +314,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   /// >>> Recent Activity Component ============================================
-  Widget _recentActivityCard({required String taskId,required String taskName, required String createdAt, required bool isPlaying, required String status,required String totalTime}) {
+  Widget _recentActivityCard({required String projectName,required String taskId,required String taskName, required String createdAt, required bool isPlaying, required String status,required String totalTime}) {
     int totalSeconds = int.tryParse(totalTime) ?? 0;
     String durationText = DateTimeHelper.formatDuration(totalSeconds);
     return StatefulBuilder(
@@ -333,10 +333,20 @@ class _HomePageState extends State<HomePage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(taskName, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 4),
-                    Text("$status | $createdAt"),
-                    Text("Time Played: $durationText", style: TextStyle(fontSize: 14, color: Colors.grey)),
+                    Text.rich(
+                      TextSpan(
+                        children: [
+                          TextSpan(text: "$projectName : ", style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black,),),
+                          TextSpan(text: taskName, style: const TextStyle(fontSize: 12, color: Colors.black38,),),
+                        ],
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 2),
+                    Text("$status | $createdAt",style: TextStyle(fontSize: 12, color: Colors.black38,),),
+                    const SizedBox(height: 2),
+                    Text("Time Played: $durationText", style: TextStyle(fontSize: 12, color: Colors.grey)),
                   ],
                 ),
               ),
