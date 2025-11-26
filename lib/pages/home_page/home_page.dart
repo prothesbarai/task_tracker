@@ -123,6 +123,29 @@ class _HomePageState extends State<HomePage> {
   /// <<< Fetch Recent Activities From Firebase ================================
 
 
+  /// >>> Fetch Count Activities From Firebase =================================
+  Stream<Map<String, int>> getStatusCountStream() {
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+    final ref = FirebaseDatabase.instance.ref("users/$uid/tasks");
+    return ref.onValue.map((event) {
+      final data = event.snapshot.value as Map?;
+      if (data == null) {return {"completed": 0, "assigned": 0, "running": 0, "paused": 0, "all": 0,};}
+      int completed = 0;
+      int assigned = 0;
+      int running = 0;
+      int paused = 0;
+      data.forEach((key, value) {
+        final task = Map<String, dynamic>.from(value);
+        final status = task["status"] ?? "";
+        if (status == "Completed") completed++;
+        if (status == "Assigned") assigned++;
+        if (status == "Playing") running++;
+        if (status == "Paused") paused++;
+      });
+      return {"completed": completed, "assigned": assigned, "running": running, "paused": paused, "all": data.length,};
+    });
+  }
+  /// <<< Fetch Count Activities From Firebase =================================
 
   void backPress(){
     Navigator.pop(context);
@@ -141,40 +164,6 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<UserHiveProvider>(context).user;
-    final List<Map<String, dynamic>> statusList = [
-      {
-        "title": "Today Completed Tasks",
-        "value": "05",
-        "icon": Icons.check_circle,
-        "color": Colors.green,
-        "status": "Completed",
-        "singleTaskTotalPlayHour": "",
-      },
-      {
-        "title": "Assign Tasks",
-        "value": "03",
-        "icon": Icons.assignment_outlined,
-        "color": Colors.pinkAccent,
-        "status": "Assigned",
-        "singleTaskTotalPlayHour": "",
-      },
-      {
-        "title": "In Running Tasks",
-        "value": "02",
-        "icon": Icons.play_circle_fill,
-        "color": Colors.blue,
-        "status": "Running",
-        "singleTaskTotalPlayHour": "",
-      },
-      {
-        "title": "All Tasks",
-        "value": totalTasks.toString(),
-        "icon": Icons.all_inbox,
-        "color": Colors.brown,
-        "status": "All",
-        "singleTaskTotalPlayHour": "",
-      },
-    ];
 
     return Scaffold(
       backgroundColor: const Color(0xffF5F7FB),
@@ -261,30 +250,45 @@ class _HomePageState extends State<HomePage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: const [
                   Text("Status", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                  Text("See All") ],
+                  Text("See All")
+                ],
               ),
               const SizedBox(height: 10),
-              GridView.builder(
-                shrinkWrap: true,
-                padding: EdgeInsets.zero,
-                physics: NeverScrollableScrollPhysics(),
-                itemCount: statusList.length,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 10, mainAxisSpacing: 10, childAspectRatio: 1.28,),
-                itemBuilder: (context, index) {
-                  final item = statusList[index];
-                  return Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 18,vertical: 10),
-                    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(18),),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Icon(item['icon'], color: item['color'], size: 26),
-                        SizedBox(height: 6),
-                        Text(item['title'], style: TextStyle(fontSize: 13, color: Colors.grey)),
-                        SizedBox(height: 6),
-                        Text(item['value'], style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                      ],
-                    ),
+              StreamBuilder<Map<String, int>>(
+                stream: getStatusCountStream(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {return Center(child: CircularProgressIndicator());}
+                  final counts = snapshot.data!;
+                  final List<Map<String, dynamic>> statusList = [
+                    {"title": "Completed Tasks", "value": counts["completed"].toString(), "icon": Icons.check_circle, "color": Colors.green,},
+                    {"title": "Assigned Tasks", "value": counts["assigned"].toString(), "icon": Icons.assignment_outlined, "color": Colors.pinkAccent,},
+                    {"title": "Running Tasks", "value": counts["running"].toString(), "icon": Icons.play_circle_fill, "color": Colors.blue,},
+                    {"title": "Paused Tasks", "value": counts["paused"].toString(), "icon": Icons.pause_circle_filled, "color": Colors.orange,},
+                    {"title": "All Tasks", "value": counts["all"].toString(), "icon": Icons.all_inbox, "color": Colors.brown,},
+                  ];
+                  return GridView.builder(
+                    shrinkWrap: true,
+                    padding: EdgeInsets.zero,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: statusList.length,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 10, mainAxisSpacing: 10, childAspectRatio: 1.55,),
+                    itemBuilder: (context, index) {
+                      final item = statusList[index];
+                      return Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+                        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(18),),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Icon(item['icon'], color: item['color'], size: 26),
+                            SizedBox(height: 6),
+                            Text(item['title'], style: TextStyle(fontSize: 13, color: Colors.grey)),
+                            SizedBox(height: 6),
+                            Text(item['value'], style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                      );
+                    },
                   );
                 },
               ),
