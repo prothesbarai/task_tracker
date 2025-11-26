@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:task_tracker/date_time_helper/date_time_helper.dart';
 import '../../firebase_auth/email_auth/provider/user_hive_provider.dart';
 import '../../utils/constant/app_colors.dart';
@@ -238,7 +239,22 @@ class _HomePageState extends State<HomePage> {
               StreamBuilder<Map<String, int>>(
                 stream: getStatusCountStream(),
                 builder: (context, snapshot) {
-                  if (!snapshot.hasData) {return Center(child: CircularProgressIndicator());}
+                  if (!snapshot.hasData) {
+                    return GridView.builder(
+                      shrinkWrap: true,
+                      padding: EdgeInsets.zero,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: 5,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 10, mainAxisSpacing: 10, childAspectRatio: 1.55,),
+                      itemBuilder: (context, index) {
+                        return Shimmer.fromColors(
+                          baseColor: Colors.grey.shade300,
+                          highlightColor: Colors.grey.shade100,
+                          child: Container(decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(18),),),
+                        );
+                      },
+                    );
+                  }
                   final counts = snapshot.data!;
                   final List<Map<String, dynamic>> statusList = [
                     {"title": "Completed Tasks", "value": counts["completed"].toString(), "icon": Icons.check_circle, "color": Colors.green,},
@@ -289,7 +305,18 @@ class _HomePageState extends State<HomePage> {
               StreamBuilder<List<Map<String,dynamic>>>(
                 stream: getRecentActivityStream(),
                 builder: (context, snapshot) {
-                  if (!snapshot.hasData) {return const Center(child: CircularProgressIndicator());}
+                  if (!snapshot.hasData) {
+                    return Column(
+                      children: List.generate(3, (index) => Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Shimmer.fromColors(
+                          baseColor: Colors.grey.shade300,
+                          highlightColor: Colors.grey.shade100,
+                          child: Container(height: 80, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16),),),
+                        ),
+                      )),
+                    );
+                  }
                   if (snapshot.data!.isEmpty) {return const Text("Today No Activities Found");}
                   return Column(children: snapshot.data!.map((tasks) {return listItemsCard(context: context,taskId: tasks["id"],projectName:tasks["projectName"],taskName: tasks["taskName"], createdAt: tasks["createdAt"], isPlaying: tasks["isPlaying"], status: tasks["status"],totalTime: tasks["singleTaskTotalPlayHour"] ?? "0",);}).toList(),);
                 },

@@ -54,6 +54,8 @@ dependencies:
   smooth_page_indicator: ^1.2.1
   # Google With SIgn in purpose
   google_sign_in_all_platforms: ^2.0.2
+  # Loader
+  shimmer: ^3.0.0
 
 
 dev_dependencies:
