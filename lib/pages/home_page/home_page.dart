@@ -52,10 +52,36 @@ class _HomePageState extends State<HomePage> {
             ElevatedButton(
               onPressed: () async {
                 FocusScope.of(context).unfocus();
-                if(taskNameController.text.isNotEmpty && taskProjectNameController.text.isNotEmpty) {
+                final taskName = taskNameController.text.trim();
+                final projectName = taskProjectNameController.text.trim();
+                if(taskName.isNotEmpty || projectName.isNotEmpty) {
                   final uid = FirebaseAuth.instance.currentUser!.uid;
-                  final taskId = FirebaseDatabase.instance.ref("users/$uid/tasks").push().key;
-                  await FirebaseDatabase.instance.ref("users/$uid/tasks/$taskId").set({"taskName": taskNameController.text, "projectName": taskProjectNameController.text,"status" : "Assigned", "singleTaskTotalPlayHour" : "", "lastPlayStartTime" : "","isPlaying":false, "createdAt": currentDateTime, "createdDateOnly" : createdDateOnly});
+                  final today = DateTimeHelper.formatDateOnly(DateTime.now());
+                  final ref = FirebaseDatabase.instance.ref("users/$uid/tasks");
+
+                  // >>> Check if task with same name exists today
+                  final snapshot = await ref.orderByChild("createdDateOnly").equalTo(today).get();
+                  final data = snapshot.value as Map?;
+                  bool isDuplicate = false;
+                  if(data != null){
+                    for(var entry in data.entries){
+                      final task = Map<String,dynamic>.from(entry.value);
+                      if(task["taskName"]?.toString().toLowerCase() == taskName.toLowerCase()){
+                        isDuplicate = true;
+                        break;
+                      }
+                    }
+                  }
+
+                  if(isDuplicate){
+                    // Duplicate found show message
+                    if(!mounted) return;
+                    showMessage();
+                    return;
+                  }
+                  // >>> If no duplicate, create task
+                  final taskId = ref.push().key;
+                  await FirebaseDatabase.instance.ref("users/$uid/tasks/$taskId").set({"taskName": taskName, "projectName": projectName,"status" : "Assigned", "singleTaskTotalPlayHour" : "", "lastPlayStartTime" : "","isPlaying":false, "createdAt": currentDateTime, "createdDateOnly" : createdDateOnly});
                   taskNameController.clear();
                   taskProjectNameController.clear();
                   if(!mounted) return;
@@ -98,13 +124,17 @@ class _HomePageState extends State<HomePage> {
       }).toList();
 
       // >>> Sort by createdAt
-      taskList.sort((a, b) {return b["createdAt"].toString().compareTo(a["createdAt"].toString());});
+      taskList.sort((a, b) {
+        DateTime dateA = DateTimeHelper.parseDateTime(a["createdAt"]);
+        DateTime dateB = DateTimeHelper.parseDateTime(b["createdAt"]);
+        return dateB.compareTo(dateA); // latest task first
+      });
+
       // <<< Sort by createdAt
       return taskList;
     });
   }
   /// <<< Fetch Recent Activities From Firebase ================================
-
 
   /// >>> Fetch Count Activities From Firebase =================================
   Stream<Map<String, int>> getStatusCountStream() {
@@ -132,6 +162,10 @@ class _HomePageState extends State<HomePage> {
 
   void backPress(){
     Navigator.pop(context);
+  }
+
+  void showMessage(){
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Task with same name already exists for today!")));
   }
 
   @override
