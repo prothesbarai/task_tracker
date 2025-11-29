@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:task_tracker/date_time_helper/date_time_helper.dart';
 import '../../widgets/list_items_card.dart';
 
 class TotalAllTask extends StatelessWidget {
@@ -21,7 +22,7 @@ class TotalAllTask extends StatelessWidget {
           "id": entry.key,
           "taskName": tasks["taskName"] ?? "",
           "projectName": tasks["projectName"] ?? "",
-          "createdAt": tasks["createdAt"] ?? "",
+          "createdAt": tasks["createdAt"] ?? 0,
           "status": tasks["status"] ?? "",
           "isPlaying": tasks["isPlaying"] ?? false,
           "singleTaskTotalPlayHour": tasks["singleTaskTotalPlayHour"] ?? "0",
@@ -74,11 +75,12 @@ class TotalAllTask extends StatelessWidget {
                 taskId: t["id"],
                 taskName: t["taskName"],
                 projectName: t["projectName"],
-                createdAt: t["createdAt"],
+                createdAt: DateTimeHelper.formatDateTime(DateTime.fromMillisecondsSinceEpoch(t["createdAt"]),).toString(),
                 isPlaying: t["isPlaying"],
                 status: t["status"],
-                totalTime: t["singleTaskTotalPlayHour"],
+                totalTime: t["singleTaskTotalPlayHour"].toString(),
               );
+
             },
           );
         },

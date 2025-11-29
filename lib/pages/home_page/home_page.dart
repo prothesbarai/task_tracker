@@ -26,9 +26,8 @@ class _HomePageState extends State<HomePage> {
 
   /// >>> Create Dialogue ======================================================
   void openCreateTaskDialog() {
-    DateTime dateTime = DateTime.now();
-    final currentDateTime = DateTimeHelper.formatDateTime(dateTime);
-    final createdDateOnly = DateTimeHelper.formatDateOnly(dateTime);
+    final currentDateTime = DateTime.now();
+    final createdDateOnly = DateTimeHelper.formatDateOnly(currentDateTime);
     showDialog(
       context: context,
       builder: (context) {
@@ -74,14 +73,13 @@ class _HomePageState extends State<HomePage> {
                   }
 
                   if(isDuplicate){
-                    // Duplicate found show message
                     if(!mounted) return;
                     showMessage();
                     return;
                   }
                   // >>> If no duplicate, create task
                   final taskId = ref.push().key;
-                  await FirebaseDatabase.instance.ref("users/$uid/tasks/$taskId").set({"taskName": taskName, "projectName": projectName,"status" : "Assigned", "singleTaskTotalPlayHour" : "", "lastPlayStartTime" : "","isPlaying":false, "createdAt": currentDateTime, "createdDateOnly" : createdDateOnly});
+                  await FirebaseDatabase.instance.ref("users/$uid/tasks/$taskId").set({"taskName": taskName, "projectName": projectName,"status" : "Assigned", "singleTaskTotalPlayHour" : "", "lastPlayStartTime" : "","isPlaying":false, "createdAt": currentDateTime.millisecondsSinceEpoch, "createdDateOnly" : createdDateOnly});
                   taskNameController.clear();
                   taskProjectNameController.clear();
                   if(!mounted) return;
@@ -125,8 +123,8 @@ class _HomePageState extends State<HomePage> {
 
       // >>> Sort by createdAt
       taskList.sort((a, b) {
-        DateTime dateA = DateTimeHelper.parseDateTime(a["createdAt"]);
-        DateTime dateB = DateTimeHelper.parseDateTime(b["createdAt"]);
+        DateTime dateA = DateTime.fromMillisecondsSinceEpoch(a["createdAt"]);
+        DateTime dateB = DateTime.fromMillisecondsSinceEpoch(b["createdAt"]);
         return dateB.compareTo(dateA); // latest task first
       });
 
@@ -352,7 +350,7 @@ class _HomePageState extends State<HomePage> {
                     );
                   }
                   if (snapshot.data!.isEmpty) {return const Text("Today No Activities Found");}
-                  return Column(children: snapshot.data!.map((tasks) {return listItemsCard(context: context,taskId: tasks["id"],projectName:tasks["projectName"],taskName: tasks["taskName"], createdAt: tasks["createdAt"], isPlaying: tasks["isPlaying"], status: tasks["status"],totalTime: tasks["singleTaskTotalPlayHour"] ?? "0",);}).toList(),);
+                  return Column(children: snapshot.data!.map((tasks) {return listItemsCard(context: context,taskId: tasks["id"],projectName:tasks["projectName"],taskName: tasks["taskName"], createdAt: DateTimeHelper.formatDateTime(DateTime.fromMillisecondsSinceEpoch(tasks["createdAt"]),), isPlaying: tasks["isPlaying"], status: tasks["status"],totalTime: tasks["singleTaskTotalPlayHour"] ?? "0",);}).toList(),);
                 },
               ),
               /// <<< Recent Activity ==========================================
