@@ -22,9 +22,7 @@ class TotalAllTask extends StatelessWidget {
       }).toList();
 
       /// Sort New → Old
-      taskList.sort((a, b) {
-        return b["createdAt"].toString().compareTo(a["createdAt"].toString());
-      });
+      taskList.sort((a, b) {return b["createdAt"].toString().compareTo(a["createdAt"].toString());});
 
       return taskList;
     });
@@ -33,10 +31,7 @@ class TotalAllTask extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("All Tasks"),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text("All Tasks"), centerTitle: true,),
 
       body: StreamBuilder<List<Map<String, dynamic>>>(
         stream: getAllTaskStream(),
