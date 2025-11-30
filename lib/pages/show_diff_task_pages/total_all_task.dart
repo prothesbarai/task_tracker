@@ -73,16 +73,16 @@ class _TotalAllTaskState extends State<TotalAllTask> {
 
             List<Map<String, dynamic>> tasks = snapshot.data!;
 
-            if (tasks.isEmpty) {
-              return const Center(child: Text("No Task Found", style: TextStyle(fontSize: 16),),);
-            }
-
             if(searchQuery.isNotEmpty){
               tasks = tasks.where((t){
                 final name = t["taskName"].toString().toLowerCase();
                 final project = t["projectName"].toString().toLowerCase();
                 return name.contains(searchQuery) || project.contains(searchQuery);
               }).toList();
+            }
+
+            if (tasks.isEmpty) {
+              return const Center(child: Text("No Task Found", style: TextStyle(fontSize: 16),),);
             }
 
             return ListView.builder(
