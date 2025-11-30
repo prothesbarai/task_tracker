@@ -15,7 +15,7 @@ class _TotalAllTaskState extends State<TotalAllTask> {
 
   String searchQuery = "";
 
-  /// >>> Fetch all tasks (No filter)
+  /// >>> Fetch all tasks ======================================================
   Stream<List<Map<String, dynamic>>> getAllTaskStream() {
     final uid = FirebaseAuth.instance.currentUser!.uid;
     final ref = FirebaseDatabase.instance.ref("users/$uid/tasks");
@@ -35,7 +35,8 @@ class _TotalAllTaskState extends State<TotalAllTask> {
       return taskList;
     });
   }
-
+  /// <<< Fetch all tasks ======================================================
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
