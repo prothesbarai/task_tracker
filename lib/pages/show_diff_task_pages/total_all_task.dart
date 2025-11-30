@@ -18,15 +18,7 @@ class TotalAllTask extends StatelessWidget {
 
       List<Map<String, dynamic>> taskList = data.entries.map((entry) {
         final tasks = Map<String, dynamic>.from(entry.value);
-        return {
-          "id": entry.key,
-          "taskName": tasks["taskName"] ?? "",
-          "projectName": tasks["projectName"] ?? "",
-          "createdAt": tasks["createdAt"] ?? 0,
-          "status": tasks["status"] ?? "",
-          "isPlaying": tasks["isPlaying"] ?? false,
-          "singleTaskTotalPlayHour": tasks["singleTaskTotalPlayHour"] ?? "0",
-        };
+        return {"id": entry.key, "taskName": tasks["taskName"] ?? "", "projectName": tasks["projectName"] ?? "", "createdAt": tasks["createdAt"] ?? 0, "status": tasks["status"] ?? "", "isPlaying": tasks["isPlaying"] ?? false, "singleTaskTotalPlayHour": tasks["singleTaskTotalPlayHour"] ?? "0",};
       }).toList();
 
       /// Sort New → Old
