@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:task_tracker/date_time_helper/date_time_helper.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../firebase_auth/email_auth/provider/user_hive_provider.dart';
 import '../../utils/constant/app_colors.dart';
 import '../../widgets/list_items_card.dart';
@@ -158,6 +159,42 @@ class _HomePageState extends State<HomePage> {
   }
   /// <<< Fetch Count Activities From Firebase =================================
 
+  
+  
+  /// >>>  This three method only for daily meeting ============================
+  // >>> Check Time Range (use 24-hour format)
+  bool isMeetingTime(){
+    final now = DateTime.now();
+    final startTime  = DateTime(now.year, now.month, now.day, 9, 0);
+    final endTime  = DateTime(now.year, now.month, now.day, 10, 0);
+    return now.isAfter(startTime) && now.isBefore(endTime);
+  }
+  // >>> Fetch Google Link From Firebase
+  Future<String?> getDailyMeetingLink() async{
+    final ref = FirebaseDatabase.instance.ref("settings/daily_meet_link");
+    final snapshot = await ref.get();
+    if (!snapshot.exists) return null;
+    return snapshot.value.toString();
+  }
+  // >>> Join Button Logic
+  void onJoinedPressed() async{
+    final meetLink = await getDailyMeetingLink();
+    if(meetLink == null && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("No meeting link found!")));
+      return;
+    }
+    if(isMeetingTime()){
+      launchUrl(Uri.parse("$meetLink"));
+    }else{
+      if(mounted){
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Meeting time এখন না, পরে চেষ্টা করুন!")));
+      }
+    }
+  }
+  /// <<<  This three method only for daily meeting ============================
+  
+  
+  
   void backPress(){
     Navigator.pop(context);
   }
@@ -248,7 +285,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: onJoinedPressed,
                       style: ElevatedButton.styleFrom(backgroundColor: Colors.white, foregroundColor: Colors.black, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30),),),
                       child: const Text("Join"),
                     )
