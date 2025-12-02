@@ -138,7 +138,10 @@ Software Engineer
 ------------------------------------------------------------------------
 
 # 📄 License
-
 MIT License
+
+
+# 📥 Download APK
+[Click here to download Task Tracker APK](https://github.com/prothesbarai/task_tracker/blob/main/assets/apps/taskTracker.apk)
 
 
